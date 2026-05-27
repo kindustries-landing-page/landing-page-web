@@ -24,11 +24,11 @@ jobs:
             git checkout master
             git reset --hard origin/master
             cd /opt/stacks/klotus-landing-page-web
-            docker compose up -d
+            docker compose up -d --force-recreate
+            sleep 5
             for i in $(seq 1 20); do
-              code=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:3000/ || true)
-              if [ "$code" = "200" ]; then
-                echo "Web health OK (200)"
+              if docker exec klotus-landing-page-web sh -lc "wget -qO- http://127.0.0.1:3000/ >/dev/null 2>&1"; then
+                echo "Web health OK"
                 exit 0
               fi
               sleep 3
