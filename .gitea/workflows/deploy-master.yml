@@ -9,23 +9,19 @@ jobs:
       - name: Setup SSH key
         run: |
           mkdir -p ~/.ssh
-          if echo "${{ secrets.DEPLOY_KEY }}" | base64 -d >/tmp/deploy_key 2>/dev/null; then
-            mv /tmp/deploy_key ~/.ssh/id_ed25519
-          else
-            printf '%s\n' "${{ secrets.DEPLOY_KEY }}" > ~/.ssh/id_ed25519
-          fi
+          echo "${{ secrets.DEPLOY_KEY }}" | base64 -d > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan -H 100.75.67.115 >> ~/.ssh/known_hosts
 
-      - name: Write and transfer deploy script
+      - name: Write deploy script
         env:
           GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
         run: |
-          cat > /tmp/deploy-web.sh <<SCRIPT
+          cat > /tmp/deploy-web.sh << SCRIPT
           #!/bin/bash
-          set -euo pipefail
-          cd /opt/repos/klotus-split/landing-page-web
-          git remote set-url origin "https://lio.nguyen:${GIT_TOKEN}@git.liouni.com/klotus/landing-page-web.git"
+          set -e
+          export GIT_TOKEN="${GIT_TOKEN}"
+          cd /opt/repos/klotus/landing-page-web
+          git remote set-url origin https://lio.nguyen:\${GIT_TOKEN}@git.liouni.com/klotus/landing-page-web.git
           git fetch origin
           git checkout master
           git reset --hard origin/master
@@ -40,12 +36,11 @@ jobs:
             sleep 2
           done
           echo "Web health check failed"
-          docker logs --tail=100 klotus-landing-page-web || true
           exit 1
           SCRIPT
           chmod +x /tmp/deploy-web.sh
-          scp -i ~/.ssh/id_ed25519 /tmp/deploy-web.sh lio@100.75.67.115:/tmp/deploy-web.sh
 
       - name: Deploy Web on Head
         run: |
-          ssh -i ~/.ssh/id_ed25519 lio@100.75.67.115 'bash /tmp/deploy-web.sh'
+          scp -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no /tmp/deploy-web.sh lio@100.75.67.115:/tmp/deploy-web.sh
+          ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no lio@100.75.67.115 'bash /tmp/deploy-web.sh'
