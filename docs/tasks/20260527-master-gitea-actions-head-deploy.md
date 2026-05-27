@@ -53,3 +53,5 @@ Tự động deploy Web khi push vào `master` của repo `landing-page-web`.
 - API repo: N/A
 - Web repo:
 - DB/directus staging: N/A
+
+<!-- ci smoke 20260527T154151Z -->
