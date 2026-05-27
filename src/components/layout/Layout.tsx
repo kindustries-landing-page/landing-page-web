@@ -14,7 +14,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
   };
   
   return (
-    <div className="min-h-screen bg-white text-zinc-900 font-sans flex flex-col items-center overflow-x-hidden">
+    <div className="min-h-screen relative text-zinc-900 font-sans flex flex-col items-center overflow-x-hidden">
+      {/* Global Background from demo.html */}
+      <div className="fixed inset-0 -z-50 overflow-hidden pointer-events-none">
+        <div className="absolute inset-0 bg-[linear-gradient(160deg,#fdf4ff_0%,#f0e6ff_40%,#ede0ff_70%,#fdf4ff_100%)]" />
+        <div className="absolute w-[600px] h-[600px] rounded-full bg-[radial-gradient(circle,rgba(168,85,247,0.25),transparent_70%)] -top-[100px] -right-[100px] animate-[float1_8s_ease-in-out_infinite]" />
+        <div className="absolute w-[400px] h-[400px] rounded-full bg-[radial-gradient(circle,rgba(75,0,118,0.15),transparent_70%)] -bottom-[80px] -left-[60px] animate-[float2_10s_ease-in-out_infinite]" />
+        <div className="absolute w-[200px] h-[200px] rounded-full bg-[radial-gradient(circle,rgba(216,180,254,0.4),transparent_70%)] top-[30%] left-[20%] animate-[float1_6s_ease-in-out_infinite_reverse]" />
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(75,0,118,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(75,0,118,0.04)_1px,transparent_1px)] bg-[size:48px_48px]" />
+      </div>
+
       {/* TODO: Khôi phục nút chuyển ngôn ngữ ở góc phải trên cùng khi cần
       <div className="absolute top-4 right-4 z-50">
         <button 

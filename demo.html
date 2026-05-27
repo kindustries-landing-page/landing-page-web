@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>K Lotus</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --p:#4B0076;--p2:#9366D9;--p3:#a855f7;--p4:#d8b4fe;
+  --white:#fff;--g50:#fafafa;--g100:#f4f4f5;--g200:#e4e4e7;
+  --g400:#a1a1aa;--g600:#52525b;--g800:#27272a;--text:#18181b;
+}
+html{scroll-behavior:smooth;}
+body{font-family:'SF Pro Display',-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:#fff;color:var(--text);overflow-x:hidden;}
+a{text-decoration:none;color:inherit;}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-thumb{background:var(--p3);border-radius:2px;}
+
+/* GLASS UTILITY */
+.glass{background:rgba(255,255,255,.55);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.7);}
+.glass-dark{background:rgba(75,0,118,.08);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(168,85,247,.2);}
+
+/* NAV */
+nav{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:300;display:flex;align-items:center;gap:4px;padding:8px 16px;border-radius:50px;background:rgba(255,255,255,.7);backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,.9);box-shadow:0 8px 32px rgba(75,0,118,.12),0 2px 8px rgba(0,0,0,.06);width:auto;min-width:600px;}
+.nav-logo{display:flex;align-items:center;gap:8px;margin-right:8px;cursor:pointer;}
+.logo-orb{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--p),var(--p3));display:flex;align-items:center;justify-content:center;}
+.logo-orb svg{width:15px;height:15px;}
+.nav-logo-text{font-size:15px;font-weight:800;letter-spacing:.8px;background:linear-gradient(90deg,var(--p),var(--p3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.nav-pill{padding:7px 16px;border-radius:24px;font-size:13px;font-weight:500;color:var(--g600);cursor:pointer;transition:all .2s;background:none;border:none;}
+.nav-pill:hover,.nav-pill.on{color:var(--p);background:rgba(75,0,118,.08);}
+.nav-cta{background:linear-gradient(135deg,var(--p),var(--p2));color:#fff;padding:8px 20px;border-radius:24px;font-size:13px;font-weight:600;cursor:pointer;border:none;margin-left:8px;box-shadow:0 4px 14px rgba(75,0,118,.3);transition:all .2s;}
+.nav-cta:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(75,0,118,.4);}
+
+/* PAGES */
+.page{display:none;}
+.page.on{display:block;}
+
+/* ===== HOME ===== */
+
+/* HERO */
+#hero{position:relative;height:100vh;min-height:600px;overflow:hidden;display:flex;align-items:center;justify-content:center;}
+.hero-bg{position:absolute;inset:0;background:linear-gradient(160deg,#fdf4ff 0%,#f0e6ff 40%,#ede0ff 70%,#fdf4ff 100%);}
+.orb1{position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(168,85,247,.25),transparent 70%);top:-100px;right:-100px;animation:float1 8s ease-in-out infinite;}
+.orb2{position:absolute;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(75,0,118,.15),transparent 70%);bottom:-80px;left:-60px;animation:float2 10s ease-in-out infinite;}
+.orb3{position:absolute;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(216,180,254,.4),transparent 70%);top:30%;left:20%;animation:float1 6s ease-in-out infinite reverse;}
+@keyframes float1{0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(-30px) scale(1.05);}}
+@keyframes float2{0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(20px) scale(.95);}}
+.grid-bg{position:absolute;inset:0;background-image:linear-gradient(rgba(75,0,118,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(75,0,118,.04) 1px,transparent 1px);background-size:48px 48px;}
+
+.hero-inner{position:relative;z-index:2;text-align:center;padding:0 24px;max-width:760px;}
+.hero-tag{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.6);backdrop-filter:blur(12px);border:1px solid rgba(168,85,247,.25);border-radius:24px;padding:7px 18px;font-size:11.5px;font-weight:700;color:var(--p);letter-spacing:1px;text-transform:uppercase;margin-bottom:28px;}
+.pulse-dot{width:7px;height:7px;border-radius:50%;background:var(--p3);animation:pd 2s infinite;}
+@keyframes pd{0%,100%{box-shadow:0 0 0 0 rgba(168,85,247,.6);}70%{box-shadow:0 0 0 8px rgba(168,85,247,0);}}
+
+.hero-h1{font-size:72px;font-weight:900;line-height:1;letter-spacing:-3px;margin-bottom:24px;overflow:hidden;}
+.hero-h1 .line{display:block;overflow:hidden;}
+.hero-h1 .word{display:inline-block;animation:slideUp .8s cubic-bezier(.16,1,.3,1) both;}
+.hero-h1 .word:nth-child(2){animation-delay:.1s;}
+.hero-h1 .line2 .word{animation-delay:.2s;}
+.hero-h1 .line2 .word:nth-child(2){animation-delay:.3s;}
+@keyframes slideUp{from{transform:translateY(100%);opacity:0;}to{transform:translateY(0);opacity:1;}}
+.grad-w{background:linear-gradient(135deg,var(--p) 0%,var(--p3) 50%,#e879f9 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+
+.hero-sub{font-size:17px;color:var(--g600);line-height:1.8;max-width:480px;margin:0 auto 36px;animation:fadeIn 1s .5s both;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+
+.hero-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;animation:fadeIn 1s .65s both;}
+.btn-glow{background:linear-gradient(135deg,var(--p),var(--p2));color:#fff;padding:15px 36px;border-radius:32px;font-size:15px;font-weight:700;border:none;cursor:pointer;position:relative;overflow:hidden;box-shadow:0 8px 32px rgba(75,0,118,.35);transition:transform .2s,box-shadow .2s;}
+.btn-glow::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.2),transparent);transition:opacity .2s;}
+.btn-glow:hover{transform:translateY(-3px);box-shadow:0 16px 40px rgba(75,0,118,.45);}
+.btn-ghost2{background:rgba(255,255,255,.7);backdrop-filter:blur(12px);color:var(--p);padding:15px 32px;border-radius:32px;font-size:15px;font-weight:600;border:1.5px solid rgba(75,0,118,.2);cursor:pointer;transition:all .2s;}
+.btn-ghost2:hover{background:#fff;border-color:var(--p3);box-shadow:0 6px 20px rgba(75,0,118,.12);}
+
+.hero-scroll-hint{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);z-index:2;display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--g400);font-size:11px;letter-spacing:1px;text-transform:uppercase;animation:fadeIn 1s 1.2s both;}
+.scroll-arrow{width:20px;height:20px;border-right:2px solid var(--g400);border-bottom:2px solid var(--g400);transform:rotate(45deg);animation:bounce 2s ease-in-out infinite;margin-top:-6px;}
+@keyframes bounce{0%,100%{transform:rotate(45deg) translateY(0);}50%{transform:rotate(45deg) translateY(5px);}}
+
+/* MARQUEE */
+.mq{overflow:hidden;padding:14px 0;background:linear-gradient(90deg,var(--p),var(--p2),var(--p3),var(--p2),var(--p));}
+.mq-inner{display:inline-flex;gap:40px;animation:mq 22s linear infinite;white-space:nowrap;}
+@keyframes mq{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
+.mq-item{font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.85);}
+.mq-sep{color:rgba(255,255,255,.4);}
+
+/* PRODUCTS SECTION */
+.sec{padding:88px 48px;}
+.eyebrow{text-align:center;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--p3);margin-bottom:10px;}
+.sec-h{text-align:center;font-size:40px;font-weight:800;letter-spacing:-1.5px;margin-bottom:8px;}
+.sec-p{text-align:center;color:var(--g400);font-size:15px;margin-bottom:56px;}
+
+.prod-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(196px,1fr));gap:20px;max-width:1100px;margin:0 auto;}
+.pc{border-radius:24px;overflow:hidden;cursor:pointer;position:relative;transition:transform .3s,box-shadow .3s;background:rgba(255,255,255,.6);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.9);box-shadow:0 4px 24px rgba(75,0,118,.06);}
+.pc:hover{transform:translateY(-10px);box-shadow:0 24px 56px rgba(75,0,118,.15);}
+.pc.star{border:1.5px solid rgba(168,85,247,.35);background:rgba(248,236,255,.6);}
+.pc-badge{position:absolute;top:12px;right:12px;background:linear-gradient(135deg,var(--p),var(--p3));color:#fff;font-size:10px;font-weight:800;padding:4px 11px;border-radius:20px;letter-spacing:.5px;}
+.pc-img{height:148px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,rgba(245,238,255,.8),rgba(237,224,255,.8));}
+.pc-img svg{width:96px;height:96px;filter:drop-shadow(0 6px 18px rgba(75,0,118,.22));}
+.pc-body{padding:18px;}
+.pc-body h3{font-size:15px;font-weight:700;margin-bottom:3px;}
+.pc-model{font-size:11px;color:var(--g400);margin-bottom:10px;letter-spacing:.5px;}
+.pc-tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px;}
+.tag{background:rgba(75,0,118,.07);color:var(--p);font-size:10.5px;font-weight:600;padding:3px 9px;border-radius:12px;}
+.pc-price{font-size:18px;font-weight:800;color:var(--p);}
+.pc-price small{font-size:11px;font-weight:400;color:var(--g400);}
+
+/* WHY US */
+.why-bg{background:linear-gradient(160deg,#fdf4ff,#f5eeff);}
+.why-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;max-width:1000px;margin:0 auto;}
+.wc{border-radius:24px;padding:28px;cursor:default;transition:all .3s;background:rgba(255,255,255,.55);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.85);}
+.wc:hover{transform:translateY(-6px);box-shadow:0 20px 48px rgba(75,0,118,.12);background:rgba(255,255,255,.8);}
+.wc-icon{width:52px;height:52px;border-radius:16px;background:linear-gradient(135deg,var(--p),var(--p3));display:flex;align-items:center;justify-content:center;margin-bottom:16px;box-shadow:0 6px 20px rgba(75,0,118,.3);}
+.wc-icon svg{width:24px;height:24px;fill:#fff;}
+.wc h3{font-size:16px;font-weight:700;margin-bottom:8px;}
+.wc p{font-size:13px;color:var(--g600);line-height:1.75;}
+
+/* DETAIL OVERLAY */
+#det{display:none;position:fixed;inset:0;background:rgba(75,0,118,.15);backdrop-filter:blur(12px);z-index:500;align-items:center;justify-content:center;padding:20px;}
+#det.open{display:flex;}
+.det-box{background:rgba(255,255,255,.88);backdrop-filter:blur(32px);border:1.5px solid rgba(255,255,255,.95);border-radius:28px;width:680px;max-width:96vw;max-height:90vh;overflow-y:auto;box-shadow:0 48px 100px rgba(75,0,118,.2);}
+.det-close{position:absolute;top:18px;right:18px;background:rgba(75,0,118,.08);border:none;width:34px;height:34px;border-radius:50%;font-size:15px;cursor:pointer;color:var(--g600);transition:all .2s;}
+.det-close:hover{background:rgba(75,0,118,.14);}
+.det-hero{height:220px;background:linear-gradient(135deg,rgba(245,238,255,.9),rgba(237,224,255,.9));display:flex;align-items:center;justify-content:center;border-radius:28px 28px 0 0;position:relative;}
+.det-hero svg{width:180px;height:155px;filter:drop-shadow(0 12px 32px rgba(75,0,118,.28));}
+.det-body{padding:28px 32px;position:relative;}
+.det-body h2{font-size:26px;font-weight:800;color:var(--p);}
+.det-model{font-size:12px;color:var(--g400);letter-spacing:.5px;margin:4px 0 14px;}
+.det-price{font-size:30px;font-weight:900;background:linear-gradient(135deg,var(--p),var(--p3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:20px;}
+.det-sg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:22px;}
+.ds{background:rgba(75,0,118,.06);border-radius:14px;padding:12px 16px;border:1px solid rgba(75,0,118,.08);}
+.ds-l{font-size:10.5px;color:var(--p3);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;}
+.ds-v{font-size:15px;font-weight:700;color:var(--p);}
+.det-desc{font-size:14px;color:var(--g600);line-height:1.8;margin-bottom:22px;}
+.det-ctas{display:flex;gap:12px;}
+
+/* ===== STORES ===== */
+.stores-hero{padding:120px 48px 60px;background:linear-gradient(160deg,#fdf4ff,#f0e6ff);text-align:center;}
+.stores-hero h1{font-size:48px;font-weight:900;letter-spacing:-2px;color:var(--p);margin-bottom:12px;}
+.stores-hero p{color:var(--g600);font-size:16px;}
+.stores-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;max-width:1000px;margin:0 auto;}
+.sc{border-radius:22px;padding:24px;transition:all .3s;background:rgba(255,255,255,.65);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.9);box-shadow:0 4px 20px rgba(75,0,118,.06);}
+.sc:hover{transform:translateY(-5px);box-shadow:0 20px 48px rgba(75,0,118,.12);}
+.sc-n{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,var(--p),var(--p3));color:#fff;font-size:14px;font-weight:800;display:flex;align-items:center;justify-content:center;margin-bottom:14px;box-shadow:0 4px 12px rgba(75,0,118,.3);}
+.sc h3{font-size:15px;font-weight:700;margin-bottom:8px;}
+.sc-i{font-size:13px;color:var(--g600);line-height:1.8;}
+.sc-badge{display:inline-block;background:rgba(75,0,118,.08);color:var(--p);font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;margin-top:10px;letter-spacing:.5px;}
+
+.collab-wrap{max-width:600px;margin:0 auto;border-radius:28px;padding:40px;background:rgba(255,255,255,.6);backdrop-filter:blur(20px);border:1.5px solid rgba(255,255,255,.9);box-shadow:0 8px 40px rgba(75,0,118,.1);}
+.collab-wrap h3{font-size:22px;font-weight:800;color:var(--p);margin-bottom:6px;}
+.collab-wrap>p{font-size:14px;color:var(--g600);margin-bottom:24px;}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.fl{margin-bottom:14px;}
+.fl input,.fl textarea,.fl select{width:100%;padding:12px 16px;background:rgba(255,255,255,.8);border:1.5px solid rgba(75,0,118,.12);border-radius:12px;font-size:14px;font-family:inherit;outline:none;transition:border-color .2s;color:var(--text);}
+.fl input:focus,.fl textarea:focus,.fl select:focus{border-color:var(--p3);}
+.fl textarea{height:88px;resize:vertical;}
+
+/* ===== WARRANTY ===== */
+.w-hero{padding:120px 48px 0;background:linear-gradient(160deg,var(--p) 0%,var(--p2) 60%,#9333ea 100%);color:#fff;text-align:center;position:relative;overflow:hidden;}
+.w-hero::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Ccircle cx='30' cy='30' r='20'/%3E%3C/g%3E%3C/svg%3E");}
+.w-hero h1{font-size:48px;font-weight:900;letter-spacing:-2px;margin-bottom:14px;position:relative;}
+.w-hero p{font-size:16px;opacity:.8;max-width:500px;margin:0 auto 60px;position:relative;}
+.w-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:16px;max-width:880px;margin:0 auto;}
+.wcard{border-radius:20px;padding:24px;text-align:center;background:rgba(255,255,255,.12);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.2);}
+.wcard-ico{font-size:28px;margin-bottom:12px;}
+.wcard h4{font-size:14px;font-weight:700;margin-bottom:6px;}
+.wcard p{font-size:12px;opacity:.75;line-height:1.6;}
+.w-bottom{background:#fff;padding:60px 48px 80px;}
+
+.policy-list{max-width:700px;margin:0 auto 60px;}
+.pi{display:flex;gap:16px;align-items:flex-start;padding:20px 0;border-bottom:1px solid var(--g100);}
+.pi:last-child{border:none;}
+.pi-n{width:32px;height:32px;min-width:32px;border-radius:8px;background:rgba(75,0,118,.08);color:var(--p);font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;}
+.pi strong{display:block;font-size:14px;font-weight:700;margin-bottom:4px;}
+.pi span{font-size:13px;color:var(--g600);line-height:1.6;}
+
+/* AUTH */
+.auth-outer{max-width:440px;margin:0 auto;}
+.at{display:flex;background:var(--g100);border-radius:14px;padding:4px;margin-bottom:24px;}
+.at-tab{flex:1;padding:10px;text-align:center;font-size:14px;font-weight:600;cursor:pointer;border-radius:10px;color:var(--g400);transition:all .2s;}
+.at-tab.on{background:#fff;color:var(--p);box-shadow:0 2px 8px rgba(0,0,0,.08);}
+.auth-box{border-radius:24px;padding:28px 32px;background:rgba(255,255,255,.7);backdrop-filter:blur(20px);border:1.5px solid rgba(255,255,255,.95);box-shadow:0 8px 40px rgba(75,0,118,.08);}
+.auth-box h3{font-size:18px;font-weight:700;margin-bottom:6px;}
+.auth-box>p{font-size:13px;color:var(--g400);margin-bottom:20px;}
+.btn-g{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:12px;background:#fff;border:1.5px solid var(--g200);border-radius:12px;font-size:14px;font-weight:500;cursor:pointer;transition:all .2s;margin-bottom:14px;}
+.btn-g:hover{border-color:var(--p3);background:rgba(75,0,118,.03);}
+.btn-g svg{width:20px;height:20px;}
+.div{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.div span{font-size:12px;color:var(--g400);}
+.div::before,.div::after{content:'';flex:1;height:1px;background:var(--g200);}
+
+/* WARRANTY DASH */
+.wdash-user{border-radius:16px;padding:18px 20px;margin-bottom:16px;display:flex;align-items:center;gap:14px;background:rgba(75,0,118,.05);border:1px solid rgba(75,0,118,.08);}
+.wdash-av{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--p),var(--p3));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px;}
+.wdash-act{border-radius:16px;padding:22px 24px;margin-bottom:14px;background:rgba(255,255,255,.7);backdrop-filter:blur(16px);border:1.5px solid rgba(255,255,255,.95);}
+.wdash-act h4{font-size:15px;font-weight:700;color:var(--p);margin-bottom:6px;}
+.wdash-act p{font-size:13px;color:var(--g400);margin-bottom:14px;}
+.res-ok{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);border-radius:10px;padding:13px;font-size:13px;color:#15803d;margin-top:10px;}
+.res-err{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:10px;padding:11px;font-size:13px;color:#b91c1c;margin-top:8px;}
+
+/* FOOTER */
+footer{background:linear-gradient(160deg,#0a0010 0%,var(--p) 100%);color:#fff;padding:64px 48px 28px;}
+.ft-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px;margin-bottom:48px;}
+.ft-brand{display:flex;align-items:center;gap:8px;margin-bottom:16px;}
+.ft-brand span{font-size:16px;font-weight:800;letter-spacing:.8px;}
+.ft-desc{font-size:13px;opacity:.55;line-height:1.8;max-width:230px;}
+.ft-col h4{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;opacity:.4;margin-bottom:16px;}
+.ft-col a,.ft-col p{display:block;font-size:13px;opacity:.7;margin-bottom:10px;cursor:pointer;transition:opacity .2s;line-height:1;}
+.ft-col a:hover{opacity:1;}
+.ft-bot{border-top:1px solid rgba(255,255,255,.1);padding-top:20px;display:flex;justify-content:space-between;font-size:12px;opacity:.35;}
+
+/* FLOAT */
+.floats{position:fixed;right:20px;bottom:20px;display:flex;flex-direction:column;gap:10px;z-index:400;}
+.fb{width:48px;height:48px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .2s,box-shadow .2s;position:relative;}
+.fb:hover{transform:scale(1.12);}
+.fb svg{width:22px;height:22px;fill:#fff;}
+.fb-call{background:linear-gradient(135deg,#22c55e,#16a34a);box-shadow:0 4px 16px rgba(34,197,94,.4);}
+.fb-zalo{background:linear-gradient(135deg,#0068ff,#0047cc);box-shadow:0 4px 16px rgba(0,104,255,.4);}
+.fb-msg{background:linear-gradient(135deg,#0099ff,#a033ff);box-shadow:0 4px 16px rgba(160,51,255,.4);}
+.fb-td{background:linear-gradient(135deg,var(--p),var(--p3));box-shadow:0 4px 16px rgba(75,0,118,.4);}
+.fb-tip{position:absolute;right:56px;background:rgba(0,0,0,.75);color:#fff;font-size:11px;font-weight:600;padding:5px 10px;border-radius:7px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .18s;}
+.fb:hover .fb-tip{opacity:1;}
+
+/* MODAL */
+.modal-wrap{display:none;position:fixed;inset:0;background:rgba(75,0,118,.15);backdrop-filter:blur(8px);z-index:600;align-items:center;justify-content:center;padding:20px;}
+.modal-wrap.open{display:flex;}
+.modal-box{background:rgba(255,255,255,.88);backdrop-filter:blur(32px);border:1.5px solid rgba(255,255,255,.95);border-radius:28px;padding:40px;width:460px;max-width:96vw;position:relative;box-shadow:0 48px 100px rgba(75,0,118,.2);}
+.modal-x{position:absolute;top:16px;right:16px;background:rgba(75,0,118,.07);border:none;width:32px;height:32px;border-radius:50%;font-size:14px;cursor:pointer;color:var(--g600);}
+.modal-x:hover{background:rgba(75,0,118,.12);}
+.modal-box h3{font-size:22px;font-weight:800;color:var(--p);margin-bottom:6px;}
+.modal-box>p{font-size:14px;color:var(--g600);margin-bottom:22px;}
+
+/* TYPED TEXT */
+.typed::after{content:'|';color:var(--p3);animation:blink 1s step-end infinite;}
+@keyframes blink{50%{opacity:0;}}
+
+/* COUNTER ANIM */
+.count-up{display:inline-block;}
+
+/* SCROLL REVEAL */
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .7s,transform .7s;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo" onclick="goPage('home')">
+    <div class="logo-orb"><svg viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="6" stroke="white" stroke-width="1.2" opacity=".8"/><path d="M7.5 2.5v10M2.5 7.5h10" stroke="white" stroke-width="1.6" stroke-linecap="round"/><circle cx="7.5" cy="7.5" r="1.8" fill="white"/></svg></div>
+    <span class="nav-logo-text">K LOTUS</span>
+  </div>
+  <button class="nav-pill on" id="n-home" onclick="goPage('home')">Trang chủ</button>
+  <button class="nav-pill" id="n-stores" onclick="goPage('stores')">Cửa hàng</button>
+  <button class="nav-pill" id="n-warranty" onclick="goPage('warranty')">Bảo hành</button>
+  <button class="nav-cta" onclick="goPage('warranty');setTimeout(()=>document.getElementById('auth-sec').scrollIntoView({behavior:'smooth'}),300)">Đăng nhập</button>
+</nav>
+
+<!-- ======= HOME ======= -->
+<div class="page on" id="pg-home">
+
+  <div id="hero">
+    <div class="hero-bg"></div>
+    <div class="orb1"></div><div class="orb2"></div><div class="orb3"></div>
+    <div class="grid-bg"></div>
+    <div class="hero-inner">
+      <div class="hero-tag"><span class="pulse-dot"></span>Ra mắt 2025 · Made in Vietnam</div>
+      <h1 class="hero-h1">
+        <span class="line"><span class="word">Xe</span> <span class="word">Điện</span></span>
+        <span class="line line2"><span class="word grad-w">Thế</span> <span class="word grad-w">Hệ Mới</span></span>
+      </h1>
+      <p class="hero-sub">K Lotus – Công nghệ xanh tiên tiến, thiết kế đột phá. <br/>Hành trình của bạn, theo cách bạn muốn.</p>
+      <div class="hero-btns">
+        <button class="btn-glow" onclick="document.getElementById('prod-sec').scrollIntoView({behavior:'smooth'})">Khám phá xe ngay</button>
+        <button class="btn-ghost2" onclick="openTD()">Lái thử miễn phí</button>
+      </div>
+    </div>
+    <div class="hero-scroll-hint"><span>Cuộn xuống</span><div class="scroll-arrow"></div></div>
+  </div>
+
+  <!-- MARQUEE -->
+  <div class="mq">
+    <div class="mq-inner">
+      <span class="mq-item">KHÔNG KHÍ THẢI</span><span class="mq-sep">✦</span><span class="mq-item">CÔNG NGHỆ XANH</span><span class="mq-sep">✦</span><span class="mq-item">BẢO HÀNH 3 NĂM</span><span class="mq-sep">✦</span><span class="mq-item">MADE IN VIETNAM</span><span class="mq-sep">✦</span><span class="mq-item">PIN BỀN LÂU</span><span class="mq-sep">✦</span><span class="mq-item">THIẾT KẾ ĐỘC ĐÁO</span><span class="mq-sep">✦</span><span class="mq-item">KHÔNG KHÍ THẢI</span><span class="mq-sep">✦</span><span class="mq-item">CÔNG NGHỆ XANH</span><span class="mq-sep">✦</span><span class="mq-item">BẢO HÀNH 3 NĂM</span><span class="mq-sep">✦</span><span class="mq-item">MADE IN VIETNAM</span><span class="mq-sep">✦</span><span class="mq-item">PIN BỀN LÂU</span><span class="mq-sep">✦</span><span class="mq-item">THIẾT KẾ ĐỘC ĐÁO</span><span class="mq-sep">✦</span>
+    </div>
+  </div>
+
+  <!-- PRODUCTS -->
+  <section id="prod-sec" class="sec" style="background:linear-gradient(180deg,#fdf4ff,#fff);">
+    <div class="eyebrow reveal">Dòng sản phẩm</div>
+    <h2 class="sec-h reveal">5 Dòng Xe K Lotus</h2>
+    <p class="sec-p reveal">Nhấn vào xe để xem chi tiết thông số và tính năng</p>
+    <div class="prod-grid">
+      <div class="pc reveal" onclick="openDet(0)">
+        <div class="pc-img"><svg viewBox="0 0 96 96" fill="none"><ellipse cx="48" cy="76" rx="36" ry="10" fill="rgba(75,0,118,.1)"/><rect x="18" y="38" width="60" height="28" rx="11" fill="rgba(75,0,118,.18)" stroke="rgba(75,0,118,.3)" stroke-width="1.5"/><circle cx="26" cy="72" r="14" stroke="#4B0076" stroke-width="2.5" fill="none"/><circle cx="70" cy="72" r="14" stroke="#4B0076" stroke-width="2.5" fill="none"/><circle cx="26" cy="72" r="5.5" fill="rgba(75,0,118,.22)"/><circle cx="70" cy="72" r="5.5" fill="rgba(75,0,118,.22)"/><rect x="36" y="20" width="26" height="20" rx="6" fill="rgba(75,0,118,.3)" stroke="rgba(75,0,118,.4)" stroke-width="1"/><line x1="11" y1="46" x2="11" y2="64" stroke="#4B0076" stroke-width="3" stroke-linecap="round"/></svg></div>
+        <div class="pc-body"><h3>KL Urban S</h3><div class="pc-model">KL-U01 · Đô thị</div><div class="pc-tags"><span class="tag">80km</span><span class="tag">45km/h</span><span class="tag">82kg</span></div><div class="pc-price">22.500.000đ <small>/ chiếc</small></div></div>
+      </div>
+      <div class="pc star reveal" onclick="openDet(1)">
+        <div class="pc-badge">BÁN CHẠY</div>
+        <div class="pc-img"><svg viewBox="0 0 96 96" fill="none"><ellipse cx="48" cy="77" rx="40" ry="11" fill="rgba(168,85,247,.12)"/><rect x="12" y="35" width="72" height="32" rx="13" fill="rgba(75,0,118,.2)" stroke="rgba(75,0,118,.4)" stroke-width="1.5"/><circle cx="20" cy="74" r="16" stroke="#a855f7" stroke-width="2.5" fill="none"/><circle cx="76" cy="74" r="16" stroke="#a855f7" stroke-width="2.5" fill="none"/><circle cx="20" cy="74" r="6.5" fill="rgba(168,85,247,.28)"/><circle cx="76" cy="74" r="6.5" fill="rgba(168,85,247,.28)"/><rect x="32" y="16" width="32" height="22" rx="7" fill="rgba(75,0,118,.32)" stroke="rgba(75,0,118,.48)" stroke-width="1"/><line x1="6" y1="42" x2="6" y2="66" stroke="#a855f7" stroke-width="4" stroke-linecap="round"/><circle cx="48" cy="51" r="6" fill="rgba(255,255,255,.35)" stroke="rgba(75,0,118,.2)" stroke-width="1"/></svg></div>
+        <div class="pc-body"><h3>KL Pro Max</h3><div class="pc-model">KL-P02 · Flagship</div><div class="pc-tags"><span class="tag">120km</span><span class="tag">60km/h</span><span class="tag">Smart</span></div><div class="pc-price">35.900.000đ <small>/ chiếc</small></div></div>
+      </div>
+      <div class="pc reveal" onclick="openDet(2)">
+        <div class="pc-img"><svg viewBox="0 0 96 96" fill="none"><ellipse cx="48" cy="75" rx="30" ry="8" fill="rgba(75,0,118,.08)"/><rect x="24" y="42" width="48" height="22" rx="9" fill="rgba(75,0,118,.14)" stroke="rgba(75,0,118,.25)" stroke-width="1.2"/><circle cx="30" cy="70" r="12" stroke="#4B0076" stroke-width="2.5" fill="none"/><circle cx="66" cy="70" r="12" stroke="#4B0076" stroke-width="2.5" fill="none"/><circle cx="30" cy="70" r="5" fill="rgba(75,0,118,.18)"/><circle cx="66" cy="70" r="5" fill="rgba(75,0,118,.18)"/><rect x="40" y="26" width="20" height="18" rx="5" fill="rgba(75,0,118,.22)" stroke="rgba(75,0,118,.32)" stroke-width="1"/></svg></div>
+        <div class="pc-body"><h3>KL Mini Go</h3><div class="pc-model">KL-M03 · Nhỏ gọn</div><div class="pc-tags"><span class="tag">60km</span><span class="tag">35km/h</span><span class="tag">Gấp</span></div><div class="pc-price">18.000.000đ <small>/ chiếc</small></div></div>
+      </div>
+      <div class="pc reveal" onclick="openDet(3)">
+        <div class="pc-img"><svg viewBox="0 0 96 96" fill="none"><ellipse cx="48" cy="77" rx="36" ry="10" fill="rgba(75,0,118,.1)"/><rect x="16" y="36" width="64" height="30" rx="12" fill="rgba(75,0,118,.18)" stroke="rgba(75,0,118,.36)" stroke-width="1.5"/><circle cx="23" cy="73" r="15" stroke="#4B0076" stroke-width="2.5" fill="none"/><circle cx="73" cy="73" r="15" stroke="#4B0076" stroke-width="2.5" fill="none"/><circle cx="23" cy="73" r="6" fill="rgba(75,0,118,.2)"/><circle cx="73" cy="73" r="6" fill="rgba(75,0,118,.2)"/><rect x="32" y="18" width="30" height="20" rx="7" fill="rgba(75,0,118,.28)" stroke="rgba(75,0,118,.42)" stroke-width="1"/><line x1="10" y1="43" x2="10" y2="62" stroke="#4B0076" stroke-width="3" stroke-linecap="round"/><line x1="74" y1="35" x2="88" y2="28" stroke="#4B0076" stroke-width="2.5" stroke-linecap="round"/></svg></div>
+        <div class="pc-body"><h3>KL Sport X</h3><div class="pc-model">KL-S04 · Thể thao</div><div class="pc-tags"><span class="tag">100km</span><span class="tag">70km/h</span><span class="tag">Turbo</span></div><div class="pc-price">42.000.000đ <small>/ chiếc</small></div></div>
+      </div>
+      <div class="pc reveal" onclick="openDet(4)">
+        <div class="pc-img"><svg viewBox="0 0 96 96" fill="none"><ellipse cx="48" cy="75" rx="33" ry="9" fill="rgba(75,0,118,.08)"/><rect x="18" y="38" width="60" height="26" rx="10" fill="rgba(75,0,118,.15)" stroke="rgba(75,0,118,.28)" stroke-width="1.5"/><circle cx="25" cy="71" r="13" stroke="#4B0076" stroke-width="2.5" fill="none"/><circle cx="71" cy="71" r="13" stroke="#4B0076" stroke-width="2.5" fill="none"/><circle cx="25" cy="71" r="5" fill="rgba(75,0,118,.2)"/><circle cx="71" cy="71" r="5" fill="rgba(75,0,118,.2)"/><rect x="36" y="20" width="26" height="20" rx="6" fill="rgba(75,0,118,.24)" stroke="rgba(75,0,118,.38)" stroke-width="1.5"/><line x1="12" y1="45" x2="12" y2="60" stroke="#4B0076" stroke-width="3" stroke-linecap="round"/><rect x="58" y="39" width="8" height="14" rx="2" fill="rgba(75,0,118,.12)"/></svg></div>
+        <div class="pc-body"><h3>KL Family Plus</h3><div class="pc-model">KL-F05 · Gia đình</div><div class="pc-tags"><span class="tag">90km</span><span class="tag">50km/h</span><span class="tag">Rộng</span></div><div class="pc-price">29.500.000đ <small>/ chiếc</small></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHY US -->
+  <section class="sec why-bg">
+    <div class="eyebrow reveal">Vì sao chọn chúng tôi</div>
+    <h2 class="sec-h reveal">Lý do chọn K Lotus</h2>
+    <p class="sec-p reveal">Không chỉ là xe – đó là trải nghiệm sống hiện đại</p>
+    <div class="why-grid">
+      <div class="wc reveal"><div class="wc-icon"><svg viewBox="0 0 24 24"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg></div><h3>Thiết kế đột phá</h3><p>Từng đường nét tỉ mỉ, táo bạo và khác biệt – tạo ấn tượng ngay từ cái nhìn đầu tiên.</p></div>
+      <div class="wc reveal" style="transition-delay:.1s"><div class="wc-icon"><svg viewBox="0 0 24 24"><path d="M13 2.05V4.05C17.39 4.59 20.5 8.58 19.96 12.97C19.5 16.61 16.64 19.5 13 19.93V21.93C18.5 21.38 22.5 16.5 21.95 11C21.5 6.25 17.73 2.5 13 2.05M11 2.06C9.05 2.25 7.19 3 5.67 4.26L7.1 5.74C8.22 4.84 9.57 4.26 11 4.06V2.06M4.26 5.67C3 7.19 2.25 9.04 2.05 11H4.05C4.24 9.58 4.8 8.23 5.69 7.1L4.26 5.67M2.06 13C2.26 14.96 3.03 16.81 4.27 18.33L5.69 16.9C4.81 15.77 4.24 14.42 4.06 13H2.06M7.1 18.37L5.67 19.74C7.18 21 9.04 21.79 11 22V20C9.58 19.82 8.23 19.25 7.1 18.37M12 7L10 11H14L12 17L16 10H12L14 7H12Z"/></svg></div><h3>Pin công nghệ cao</h3><p>Lithium thế hệ mới – sạc nhanh 3 giờ, bền 1.000+ chu kỳ, an toàn tuyệt đối.</p></div>
+      <div class="wc reveal" style="transition-delay:.2s"><div class="wc-icon"><svg viewBox="0 0 24 24"><path d="M12 1L3 5V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V5L12 1M12 7C13.4 7 14.8 8.1 14.8 9.5V11C15.4 11 16 11.6 16 12.3V15.8C16 16.4 15.4 17 14.7 17H9.2C8.6 17 8 16.4 8 15.7V12.2C8 11.6 8.6 11 9.2 11V9.5C9.2 8.1 10.6 7 12 7M12 8.2C11.2 8.2 10.5 8.7 10.5 9.5V11H13.5V9.5C13.5 8.7 12.8 8.2 12 8.2Z"/></svg></div><h3>Bảo hành 3 năm</h3><p>Chính sách toàn diện – động cơ, pin, khung xe. Bạn yên tâm đi, chúng tôi lo hậu mãi.</p></div>
+      <div class="wc reveal" style="transition-delay:.3s"><div class="wc-icon"><svg viewBox="0 0 24 24"><path d="M17.9 17.39C17.64 16.59 16.89 16 16 16H15V13C15 12.45 14.55 12 14 12H8V10H10C10.55 10 11 9.55 11 9V7H13C14.1 7 15 6.1 15 5V4.59C17.93 5.77 20 8.65 20 12C20 14.08 19.2 15.97 17.9 17.39M11 19.93C7.05 19.44 4 16.08 4 12C4 11.38 4.08 10.78 4.21 10.21L9 15V16C9 17.1 9.9 18 11 18M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2Z"/></svg></div><h3>Thương hiệu Việt</h3><p>Hiểu người Việt, giá tối ưu, dịch vụ bản địa nhanh chóng trên toàn quốc.</p></div>
+    </div>
+  </section>
+
+</div>
+
+<!-- ======= STORES ======= -->
+<div class="page" id="pg-stores">
+  <div class="stores-hero">
+    <div class="eyebrow" style="text-align:center;">Hệ thống phân phối</div>
+    <h1>Cửa Hàng K Lotus</h1>
+    <p>Tìm cửa hàng gần bạn để trải nghiệm xe trực tiếp</p>
+  </div>
+  <section class="sec" style="background:#fff;">
+    <div class="stores-grid">
+      <div class="sc reveal"><div class="sc-n">01</div><h3>K Lotus – Quận 7</h3><div class="sc-i">📍 123 Nguyễn Văn Linh, P. Tân Phú, Q.7, TP.HCM<br/>📞 028 3456 7890<br/>🕐 8:00–17:30 (Thứ 2–Thứ 7)</div><span class="sc-badge">Showroom chính</span></div>
+      <div class="sc reveal" style="transition-delay:.1s"><div class="sc-n">02</div><h3>K Lotus – Bình Dương</h3><div class="sc-i">📍 456 Đại lộ Bình Dương, TP. Thủ Dầu Một<br/>📞 0274 123 4567<br/>🕐 8:00–17:30 (Thứ 2–Thứ 7)</div><span class="sc-badge">Đại lý chính thức</span></div>
+      <div class="sc reveal" style="transition-delay:.2s"><div class="sc-n">03</div><h3>K Lotus – Đồng Nai</h3><div class="sc-i">📍 789 Phạm Văn Thuận, TP. Biên Hoà, Đồng Nai<br/>📞 0251 987 6543<br/>🕐 8:00–17:30 (Thứ 2–Thứ 7)</div><span class="sc-badge">Đại lý chính thức</span></div>
+    </div>
+  </section>
+  <section class="sec" style="background:linear-gradient(160deg,#fdf4ff,#f5eeff);padding-top:0;">
+    <div class="eyebrow reveal" style="text-align:center;">Mở rộng cùng K Lotus</div>
+    <h2 class="sec-h reveal">Đăng ký hợp tác đại lý</h2>
+    <p class="sec-p reveal">Trở thành đối tác phân phối – cùng chúng tôi phủ sóng toàn quốc</p>
+    <div class="collab-wrap reveal">
+      <h3>Thông tin đăng ký</h3>
+      <p>Phản hồi trong vòng 1–2 ngày làm việc</p>
+      <div class="fr"><div class="fl"><input type="text" placeholder="Tên doanh nghiệp / cá nhân"/></div><div class="fl"><input type="text" placeholder="Người đại diện"/></div></div>
+      <div class="fr"><div class="fl"><input type="tel" placeholder="Số điện thoại"/></div><div class="fl"><input type="email" placeholder="Email liên hệ"/></div></div>
+      <div class="fl"><input type="text" placeholder="Địa chỉ dự kiến mở đại lý"/></div>
+      <div class="fl"><select><option value="">-- Quy mô dự kiến --</option><option>Nhỏ (dưới 50m²)</option><option>Vừa (50–100m²)</option><option>Lớn (trên 100m²)</option></select></div>
+      <div class="fl"><textarea placeholder="Kinh nghiệm kinh doanh / ghi chú..."></textarea></div>
+      <button class="btn-glow" style="width:100%" onclick="alert('Đã gửi đăng ký! Chúng tôi liên hệ sớm nhất.')">Gửi đăng ký hợp tác</button>
+    </div>
+  </section>
+</div>
+
+<!-- ======= WARRANTY ======= -->
+<div class="page" id="pg-warranty">
+  <div class="w-hero">
+    <h1>Chính Sách Bảo Hành</h1>
+    <p>K Lotus cam kết bảo hành toàn diện – để bạn luôn yên tâm trên mọi hành trình</p>
+    <div class="w-cards">
+      <div class="wcard"><div class="wcard-ico">🔋</div><h4>Pin & động cơ</h4><p>Bảo hành 3 năm hoặc 30.000km toàn diện.</p></div>
+      <div class="wcard"><div class="wcard-ico">🛡️</div><h4>Khung xe</h4><p>Bảo hành 5 năm, không giới hạn km.</p></div>
+      <div class="wcard"><div class="wcard-ico">⚙️</div><h4>Linh kiện điện</h4><p>Bảo hành 1 năm cho toàn bộ điện tử.</p></div>
+      <div class="wcard"><div class="wcard-ico">🔧</div><h4>Dịch vụ tận nơi</h4><p>Hỗ trợ kỹ thuật tại nhà trong 20km.</p></div>
+    </div>
+    <div style="height:40px;"></div>
+  </div>
+  <div class="w-bottom">
+    <div style="max-width:960px;margin:0 auto;">
+      <h3 style="font-size:24px;font-weight:800;color:var(--p);margin-bottom:28px;text-align:center;">Điều khoản bảo hành chi tiết</h3>
+      <div class="policy-list reveal" style="max-width:700px;margin:0 auto 60px;">
+        <div class="pi"><div class="pi-n">1</div><div><strong>Phạm vi áp dụng</strong><span>Áp dụng cho tất cả xe K Lotus mua tại cửa hàng chính thức và đại lý ủy quyền, kèm hóa đơn hợp lệ.</span></div></div>
+        <div class="pi"><div class="pi-n">2</div><div><strong>Điều kiện bảo hành</strong><span>Kích hoạt trong 30 ngày từ ngày mua. Không áp dụng cho tai nạn, sử dụng sai, tự ý sửa chữa hoặc biến đổi kết cấu.</span></div></div>
+        <div class="pi"><div class="pi-n">3</div><div><strong>Quy trình bảo hành</strong><span>Liên hệ hotline 1800 6868 hoặc mang xe đến cửa hàng gần nhất. Xử lý trong ngày (hỏng nhỏ) hoặc 3–5 ngày (cần linh kiện).</span></div></div>
+        <div class="pi"><div class="pi-n">4</div><div><strong>Xe thay thế miễn phí</strong><span>Bảo hành từ 3 ngày trở lên được hỗ trợ xe thay thế miễn phí tại TP.HCM và Bình Dương.</span></div></div>
+      </div>
+
+      <div id="auth-sec">
+        <div class="eyebrow" style="text-align:center;margin-bottom:10px;">Kích hoạt bảo hành</div>
+        <h2 class="sec-h" style="margin-bottom:8px;">Đăng nhập / Đăng ký</h2>
+        <p class="sec-p">Đăng nhập để kích hoạt và theo dõi bảo hành xe</p>
+        <div class="auth-outer">
+          <div class="at">
+            <div class="at-tab on" onclick="swAuth('in')">Đăng nhập</div>
+            <div class="at-tab" onclick="swAuth('up')">Đăng ký</div>
+          </div>
+          <div class="auth-box" id="box-in">
+            <h3>Chào mừng trở lại</h3>
+            <p>Đăng nhập để quản lý bảo hành xe</p>
+            <button class="btn-g" onclick="doLogin()"><svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>Tiếp tục với Google</button>
+            <div class="div"><span>hoặc</span></div>
+            <div class="fl"><input type="email" placeholder="Email"/></div>
+            <div class="fl"><input type="password" placeholder="Mật khẩu"/></div>
+            <button class="btn-glow" style="width:100%" onclick="doLogin()">Đăng nhập</button>
+          </div>
+          <div class="auth-box" id="box-up" style="display:none;">
+            <h3>Tạo tài khoản</h3>
+            <p>Đăng ký để kích hoạt bảo hành và nhận ưu đãi</p>
+            <button class="btn-g" onclick="doLogin()"><svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>Đăng ký với Google</button>
+            <div class="div"><span>hoặc</span></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;"><div class="fl"><input type="text" placeholder="Họ"/></div><div class="fl"><input type="text" placeholder="Tên"/></div></div>
+            <div class="fl"><input type="email" placeholder="Email"/></div>
+            <div class="fl"><input type="tel" placeholder="Số điện thoại"/></div>
+            <div class="fl"><input type="password" placeholder="Mật khẩu"/></div>
+            <button class="btn-glow" style="width:100%" onclick="doLogin()">Tạo tài khoản</button>
+          </div>
+          <div id="wdash" style="display:none;">
+            <div class="wdash-user">
+              <div class="wdash-av">NT</div>
+              <div style="flex:1;"><div style="font-weight:700;font-size:14px;">Nguyễn Thị Hoa</div><div style="font-size:12px;color:var(--g400);">Thành viên K Lotus</div></div>
+              <button onclick="doLogout()" style="background:rgba(75,0,118,.07);border:none;padding:7px 16px;border-radius:20px;font-size:12px;cursor:pointer;color:var(--p);font-weight:600;">Đăng xuất</button>
+            </div>
+            <div class="wdash-act">
+              <h4>Kích hoạt bảo hành xe mới</h4>
+              <p>Nhập số khung (VIN) và mã đơn hàng để kích hoạt bảo hành 3 năm.</p>
+              <div class="fl"><input type="text" id="vin" placeholder="Số khung xe (VIN) – VD: KLOT2025XXXXXXXX"/></div>
+              <div class="fl"><input type="text" id="ord" placeholder="Mã đơn hàng – VD: #KL20250310"/></div>
+              <button class="btn-glow" onclick="doActivate()">Kích hoạt bảo hành</button>
+              <div id="wres"></div>
+            </div>
+            <div class="wdash-act">
+              <h4 style="margin-bottom:14px;">Xe đang bảo hành</h4>
+              <div style="display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid var(--g100);">
+                <div style="width:38px;height:38px;background:rgba(75,0,118,.08);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;">🏍️</div>
+                <div style="flex:1;"><div style="font-size:14px;font-weight:600;">KL Pro Max · #KL20250310</div><div style="font-size:12px;color:var(--g400);">Còn bảo hành đến 10/03/2028</div></div>
+                <span style="background:rgba(34,197,94,.1);color:#15803d;font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;border:1px solid rgba(34,197,94,.2);">Hiệu lực</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer id="main-footer">
+  <div class="ft-top">
+    <div>
+      <div class="ft-brand"><div class="logo-orb"><svg viewBox="0 0 15 15" fill="none"><circle cx="7.5" cy="7.5" r="6" stroke="white" stroke-width="1.2" opacity=".8"/><path d="M7.5 2.5v10M2.5 7.5h10" stroke="white" stroke-width="1.6" stroke-linecap="round"/><circle cx="7.5" cy="7.5" r="1.8" fill="white"/></svg></div><span>K LOTUS</span></div>
+      <p class="ft-desc">Thương hiệu xe máy điện Việt Nam – Tiên phong công nghệ xanh, thiết kế hiện đại, hành trình bền vững.</p>
+    </div>
+    <div class="ft-col"><h4>Sản phẩm</h4><a onclick="goPage('home');setTimeout(()=>document.getElementById('prod-sec').scrollIntoView({behavior:'smooth'}),300)">KL Urban S</a><a onclick="goPage('home');setTimeout(()=>document.getElementById('prod-sec').scrollIntoView({behavior:'smooth'}),300)">KL Pro Max</a><a onclick="goPage('home');setTimeout(()=>document.getElementById('prod-sec').scrollIntoView({behavior:'smooth'}),300)">KL Mini Go</a><a onclick="goPage('home');setTimeout(()=>document.getElementById('prod-sec').scrollIntoView({behavior:'smooth'}),300)">KL Sport X</a><a onclick="goPage('home');setTimeout(()=>document.getElementById('prod-sec').scrollIntoView({behavior:'smooth'}),300)">KL Family Plus</a></div>
+    <div class="ft-col"><h4>Hỗ trợ</h4><a onclick="goPage('warranty')">Chính sách bảo hành</a><a onclick="goPage('warranty');setTimeout(()=>document.getElementById('auth-sec').scrollIntoView({behavior:'smooth'}),300)">Kích hoạt bảo hành</a><a onclick="goPage('stores')">Hệ thống cửa hàng</a><a onclick="openTD()">Đặt lịch lái thử</a></div>
+    <div class="ft-col"><h4>Liên hệ</h4><p>Công ty TNHH K Lotus Việt Nam</p><p>123 Nguyễn Văn Linh, Q.7</p><p>TP. Hồ Chí Minh</p><p>1800 6868 (miễn phí)</p><p>support@klotus.vn</p></div>
+  </div>
+  <div class="ft-bot"><span>© 2025 K Lotus Việt Nam · MST: 0123456789</span><span>Thiết kế bởi K Lotus Team</span></div>
+</footer>
+
+<!-- FLOATING -->
+<div class="floats">
+  <button class="fb fb-call" onclick="alert('Gọi ngay: 1800 6868')"><span class="fb-tip">Gọi ngay</span><svg viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg></button>
+  <button class="fb fb-zalo" onclick="alert('Zalo: zalo.me/klotus')"><span class="fb-tip">Chat Zalo</span><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15v-4H7l5-8v4h4l-5 8z"/></svg></button>
+  <button class="fb fb-msg" onclick="alert('Messenger: m.me/klotus')"><span class="fb-tip">Messenger</span><svg viewBox="0 0 24 24"><path d="M12 2C6.36 2 2 6.13 2 11.7c0 2.91 1.19 5.44 3.14 7.17.16.14.26.34.27.56l.05 1.75c.02.55.58.9 1.08.65l1.95-.86c.17-.07.36-.09.53-.05.7.19 1.45.29 2.22.29 5.64 0 10-4.13 10-9.7S17.64 2 12 2zm1 13.06l-2.58-2.76-5.03 2.76 5.53-5.88 2.64 2.76 4.97-2.76-5.53 5.88z"/></svg></button>
+  <button class="fb fb-td" onclick="openTD()"><span class="fb-tip">Lái thử</span><svg viewBox="0 0 24 24"><path d="M12 2L13.5 8.5H20L14.5 12.5L16.5 19L12 15L7.5 19L9.5 12.5L4 8.5H10.5L12 2Z"/></svg></button>
+</div>
+
+<!-- DETAIL OVERLAY -->
+<div id="det"><div class="det-box" style="position:relative;">
+  <button class="det-close" onclick="closeDet()">✕</button>
+  <div class="det-hero" id="det-img"></div>
+  <div class="det-body"><h2 id="det-name"></h2><div class="det-model" id="det-mod"></div><div class="det-price" id="det-price"></div><div class="det-sg" id="det-specs"></div><p class="det-desc" id="det-desc"></p><div class="det-ctas"><button class="btn-glow" onclick="openTD();closeDet()">Đặt lịch lái thử</button><button class="btn-ghost2" onclick="goPage('stores');closeDet()">Tìm cửa hàng</button></div></div>
+</div></div>
+
+<!-- TEST DRIVE MODAL -->
+<div class="modal-wrap" id="tdm"><div class="modal-box">
+  <button class="modal-x" onclick="closeTD()">✕</button>
+  <h3>Đặt lịch lái thử</h3>
+  <p>Điền thông tin – chúng tôi xác nhận trong 30 phút.</p>
+  <div class="fl"><input type="text" placeholder="Họ và tên"/></div>
+  <div class="fl"><input type="tel" placeholder="Số điện thoại"/></div>
+  <div class="fl"><select><option value="">-- Chọn dòng xe --</option><option>KL Urban S</option><option>KL Pro Max</option><option>KL Mini Go</option><option>KL Sport X</option><option>KL Family Plus</option></select></div>
+  <div class="fl"><input type="date"/></div>
+  <div class="fl"><select><option value="">-- Cửa hàng gần nhất --</option><option>K Lotus Quận 7 – TP.HCM</option><option>K Lotus Bình Dương</option><option>K Lotus Đồng Nai</option></select></div>
+  <button class="btn-glow" style="width:100%" onclick="alert('Đã đặt lịch thành công! Chúng tôi sẽ gọi xác nhận sớm nhất.');closeTD()">Xác nhận đặt lịch</button>
+</div></div>
+
+<script>
+var prods=[
+  {n:'KL Urban S',m:'KL-U01 · Xe đô thị',p:'22.500.000đ',s:[['Tầm hoạt động','80km/sạc'],['Tốc độ tối đa','45 km/h'],['Trọng lượng','82 kg'],['Thời gian sạc','4 giờ']],d:'KL Urban S – nhỏ gọn, linh hoạt trong phố, pin bền cho cả ngày đi làm.'},
+  {n:'KL Pro Max',m:'KL-P02 · Flagship',p:'35.900.000đ',s:[['Tầm hoạt động','120km/sạc'],['Tốc độ tối đa','60 km/h'],['Kết nối','Bluetooth / App'],['Sạc nhanh','3 giờ đầy']],d:'Flagship của K Lotus – kết nối thông minh, màn hình LCD, khóa từ xa, GPS chống trộm tích hợp.'},
+  {n:'KL Mini Go',m:'KL-M03 · Nhỏ gọn',p:'18.000.000đ',s:[['Tầm hoạt động','60km/sạc'],['Tốc độ tối đa','35 km/h'],['Đặc biệt','Gấp gọn 3 giây'],['Trọng lượng','48 kg']],d:'KL Mini Go – gấp gọn 3 giây, dễ đưa lên thang máy hoặc để trong ô tô.'},
+  {n:'KL Sport X',m:'KL-S04 · Thể thao',p:'42.000.000đ',s:[['Tầm hoạt động','100km/sạc'],['Tốc độ tối đa','70 km/h'],['Chế độ lái','Eco/Sport/Turbo'],['Phanh','ABS 2 kênh']],d:'3 chế độ lái, phanh ABS, thiết kế thể thao và hệ thống đèn LED chiếu xa.'},
+  {n:'KL Family Plus',m:'KL-F05 · Gia đình',p:'29.500.000đ',s:[['Tầm hoạt động','90km/sạc'],['Tốc độ tối đa','50 km/h'],['Cốp chứa đồ','28 lít'],['Yên sau','Siêu rộng']],d:'Tối ưu cho cả gia đình – cốp 28 lít, yên rộng, tay nắm an toàn và hệ thống treo êm ái.'}
+];
+var svgs=['<svg viewBox="0 0 180 155" fill="none"><ellipse cx="90" cy="130" rx="72" ry="18" fill="rgba(75,0,118,.08)"/><rect x="30" y="62" width="120" height="52" rx="18" fill="rgba(75,0,118,.14)" stroke="rgba(75,0,118,.28)" stroke-width="1.5"/><circle cx="46" cy="126" r="26" stroke="#4B0076" stroke-width="4" fill="none"/><circle cx="134" cy="126" r="26" stroke="#4B0076" stroke-width="4" fill="none"/><circle cx="46" cy="126" r="11" fill="rgba(75,0,118,.2)"/><circle cx="134" cy="126" r="11" fill="rgba(75,0,118,.2)"/><rect x="64" y="34" width="52" height="30" rx="10" fill="rgba(75,0,118,.22)" stroke="rgba(75,0,118,.35)" stroke-width="1.5"/><line x1="18" y1="74" x2="18" y2="112" stroke="#4B0076" stroke-width="5" stroke-linecap="round"/></svg>',
+'<svg viewBox="0 0 180 155" fill="none"><ellipse cx="90" cy="132" rx="78" ry="19" fill="rgba(168,85,247,.1)"/><rect x="20" y="58" width="140" height="56" rx="20" fill="rgba(75,0,118,.18)" stroke="rgba(75,0,118,.38)" stroke-width="2"/><circle cx="36" cy="128" r="28" stroke="#a855f7" stroke-width="4" fill="none"/><circle cx="144" cy="128" r="28" stroke="#a855f7" stroke-width="4" fill="none"/><circle cx="36" cy="128" r="12" fill="rgba(168,85,247,.25)"/><circle cx="144" cy="128" r="12" fill="rgba(168,85,247,.25)"/><rect x="58" y="30" width="64" height="32" rx="12" fill="rgba(75,0,118,.28)" stroke="rgba(75,0,118,.45)" stroke-width="1.5"/><line x1="8" y1="70" x2="8" y2="114" stroke="#a855f7" stroke-width="6" stroke-linecap="round"/><circle cx="90" cy="86" r="10" fill="rgba(255,255,255,.3)" stroke="rgba(75,0,118,.2)" stroke-width="1"/></svg>',
+'<svg viewBox="0 0 180 155" fill="none"><ellipse cx="90" cy="130" rx="62" ry="14" fill="rgba(75,0,118,.06)"/><rect x="38" y="66" width="104" height="44" rx="15" fill="rgba(75,0,118,.11)" stroke="rgba(75,0,118,.22)" stroke-width="1.5"/><circle cx="54" cy="124" r="22" stroke="#4B0076" stroke-width="3.5" fill="none"/><circle cx="126" cy="124" r="22" stroke="#4B0076" stroke-width="3.5" fill="none"/><circle cx="54" cy="124" r="9" fill="rgba(75,0,118,.18)"/><circle cx="126" cy="124" r="9" fill="rgba(75,0,118,.18)"/><rect x="72" y="40" width="44" height="28" rx="8" fill="rgba(75,0,118,.2)" stroke="rgba(75,0,118,.3)" stroke-width="1"/></svg>',
+'<svg viewBox="0 0 180 155" fill="none"><ellipse cx="90" cy="131" rx="74" ry="18" fill="rgba(75,0,118,.09)"/><rect x="22" y="56" width="136" height="54" rx="19" fill="rgba(75,0,118,.16)" stroke="rgba(75,0,118,.34)" stroke-width="2"/><circle cx="38" cy="127" r="27" stroke="#4B0076" stroke-width="4" fill="none"/><circle cx="142" cy="127" r="27" stroke="#4B0076" stroke-width="4" fill="none"/><circle cx="38" cy="127" r="11" fill="rgba(75,0,118,.22)"/><circle cx="142" cy="127" r="11" fill="rgba(75,0,118,.22)"/><rect x="60" y="28" width="60" height="30" rx="11" fill="rgba(75,0,118,.26)" stroke="rgba(75,0,118,.42)" stroke-width="1.5"/><line x1="10" y1="68" x2="10" y2="110" stroke="#4B0076" stroke-width="5.5" stroke-linecap="round"/><line x1="143" y1="55" x2="167" y2="44" stroke="#4B0076" stroke-width="2.5" stroke-linecap="round"/></svg>',
+'<svg viewBox="0 0 180 155" fill="none"><ellipse cx="90" cy="130" rx="68" ry="16" fill="rgba(75,0,118,.08)"/><rect x="26" y="60" width="128" height="50" rx="17" fill="rgba(75,0,118,.13)" stroke="rgba(75,0,118,.27)" stroke-width="1.5"/><circle cx="42" cy="125" r="24" stroke="#4B0076" stroke-width="3.5" fill="none"/><circle cx="138" cy="125" r="24" stroke="#4B0076" stroke-width="3.5" fill="none"/><circle cx="42" cy="125" r="10" fill="rgba(75,0,118,.2)"/><circle cx="138" cy="125" r="10" fill="rgba(75,0,118,.2)"/><rect x="64" y="34" width="52" height="28" rx="9" fill="rgba(75,0,118,.22)" stroke="rgba(75,0,118,.36)" stroke-width="1.5"/><line x1="14" y1="70" x2="14" y2="108" stroke="#4B0076" stroke-width="5" stroke-linecap="round"/><rect x="112" y="61" width="14" height="22" rx="3" fill="rgba(75,0,118,.12)"/></svg>'];
+
+function openDet(i){var p=prods[i];document.getElementById('det-img').innerHTML=svgs[i];document.getElementById('det-name').textContent=p.n;document.getElementById('det-mod').textContent=p.m;document.getElementById('det-price').textContent=p.p;document.getElementById('det-specs').innerHTML=p.s.map(s=>'<div class="ds"><div class="ds-l">'+s[0]+'</div><div class="ds-v">'+s[1]+'</div></div>').join('');document.getElementById('det-desc').textContent=p.d;document.getElementById('det').classList.add('open');}
+function closeDet(){document.getElementById('det').classList.remove('open');}
+document.getElementById('det').addEventListener('click',function(e){if(e.target===this)closeDet();});
+
+function openTD(){document.getElementById('tdm').classList.add('open');}
+function closeTD(){document.getElementById('tdm').classList.remove('open');}
+document.getElementById('tdm').addEventListener('click',function(e){if(e.target===this)closeTD();});
+
+function goPage(p){
+  document.querySelectorAll('.page').forEach(el=>el.classList.remove('on'));
+  document.getElementById('pg-'+p).classList.add('on');
+  document.querySelectorAll('.nav-pill').forEach(el=>el.classList.remove('on'));
+  var n=document.getElementById('n-'+p);if(n)n.classList.add('on');
+  window.scrollTo({top:0,behavior:'smooth'});
+  setTimeout(initReveal,100);
+}
+
+function swAuth(t){
+  document.querySelectorAll('.at-tab').forEach((el,i)=>el.classList.toggle('on',i===(t==='in'?0:1)));
+  document.getElementById('box-in').style.display=t==='in'?'block':'none';
+  document.getElementById('box-up').style.display=t==='up'?'block':'none';
+}
+function doLogin(){document.getElementById('box-in').style.display='none';document.getElementById('box-up').style.display='none';document.getElementById('wdash').style.display='block';}
+function doLogout(){document.getElementById('wdash').style.display='none';document.getElementById('box-in').style.display='block';}
+function doActivate(){
+  var v=document.getElementById('vin').value.trim(),o=document.getElementById('ord').value.trim(),r=document.getElementById('wres');
+  if(!v||!o){r.innerHTML='<div class="res-err">Vui lòng nhập đầy đủ thông tin.</div>';return;}
+  r.innerHTML='<div class="res-ok"><strong>✓ Kích hoạt thành công!</strong><br/>Xe <b>'+v+'</b> được bảo hành 3 năm.<br/>Mã bảo hành: <b>WR-'+Math.random().toString(36).substr(2,8).toUpperCase()+'</b></div>';
+}
+
+/* SCROLL REVEAL */
+function initReveal(){
+  document.querySelectorAll('.reveal').forEach(el=>{
+    var ob=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');ob.unobserve(e.target);}});},{threshold:.15});
+    ob.observe(el);
+  });
+}
+initReveal();
+</script>
+</body>
+</html>

@@ -126,10 +126,12 @@ describe('Warranty page', () => {
     });
   });
 
-  it('shows error modal when vehicle lookup fails', async () => {
-    mockCheckWarranty.mockRejectedValue(
-      new Error('Không tìm thấy xe phù hợp với số khung và số máy')
-    );
+  it('opens confirm modal when vehicle is not found in DB yet', async () => {
+    mockCheckWarranty.mockResolvedValue({
+      found: false,
+      vehicle: null,
+      active_warranty: null,
+    });
 
     render(
       <MemoryRouter initialEntries={['/bao-hanh?sokhung=BAD&somay=BAD']}>
@@ -137,8 +139,6 @@ describe('Warranty page', () => {
       </MemoryRouter>
     );
 
-    await waitFor(() => {
-      expect(screen.getByText('Không tìm thấy thông tin xe.')).toBeInTheDocument();
-    });
+    expect(await screen.findByText('Xác nhận kích hoạt')).toBeInTheDocument();
   });
 });

@@ -22,32 +22,6 @@ export function Home() {
     <div className="w-full relative">
       {/* Hero Section */}
       <section className="relative min-h-[600px] h-screen overflow-hidden flex items-center justify-center">
-        {/* Base Gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#f8f0ff] via-white to-[#fcf9ff] -z-30" />
-        
-        {/* Animated Glowing Blobs */}
-        <div className="absolute w-[800px] h-[800px] rounded-full bg-[radial-gradient(circle,rgba(192,132,252,0.15),transparent_60%)] -top-[200px] -right-[200px] -z-20 animate-float1 blur-3xl opacity-80" />
-        <div className="absolute w-[600px] h-[600px] rounded-full bg-[radial-gradient(circle,rgba(75,0,118,0.08),transparent_60%)] -bottom-[100px] -left-[150px] -z-20 animate-float2 blur-3xl opacity-80" />
-        <div className="absolute w-[400px] h-[400px] rounded-full bg-[radial-gradient(circle,rgba(232,121,249,0.12),transparent_60%)] top-[40%] left-[20%] -z-20 animate-float1 blur-3xl opacity-60" style={{ animationDelay: '2s' }} />
-
-        {/* Central Premium Tech Halo */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[70vw] max-w-[800px] aspect-square rounded-full flex items-center justify-center -z-20 opacity-40 mix-blend-multiply">
-          <div className="absolute inset-0 border-[1px] border-purple-300/30 rounded-full animate-spin [animation-duration:40s] flex items-center justify-center">
-            <div className="w-2 h-2 rounded-full bg-purple-400 absolute -top-1" />
-          </div>
-          <div className="absolute inset-[10%] border-t border-r border-[#4B0076]/20 rounded-full animate-spin [animation-duration:25s] [animation-direction:reverse]" />
-          <div className="absolute inset-[25%] bg-gradient-to-tr from-purple-200/20 to-transparent rounded-full backdrop-blur-3xl" />
-          <div className="absolute w-full h-[1px] bg-gradient-to-r from-transparent via-purple-300/40 to-transparent transform rotate-45" />
-          <div className="absolute w-full h-[1px] bg-gradient-to-r from-transparent via-purple-300/40 to-transparent transform -rotate-45" />
-        </div>
-
-        {/* Floating Glass Panels */}
-        <div className="absolute top-[20%] left-[10%] w-32 h-32 bg-white/40 backdrop-blur-md rounded-2xl border border-white/60 shadow-xl rotate-12 -z-10 animate-float2" />
-        <div className="absolute bottom-[25%] right-[12%] w-48 h-48 bg-white/30 backdrop-blur-xl rounded-full border border-white/60 shadow-[0_15px_35px_rgba(75,0,118,0.05)] -rotate-6 -z-10 animate-float1" style={{ animationDelay: '1s' }} />
-
-        {/* Decorative Grid Pattern */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#4B00760A_1px,transparent_1px),linear-gradient(to_bottom,#4B00760A_1px,transparent_1px)] bg-[size:64px_64px] -z-10 [mask-image:radial-gradient(ellipse_100%_100%_at_50%_50%,#000_20%,transparent_80%)]" />
-
         <div className="relative z-10 text-center px-6 max-w-3xl flex flex-col items-center">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
