@@ -184,32 +184,28 @@ export function Warranty() {
 
         {hasQrParams ? (
           <div className="relative z-10 w-full max-w-xl rounded-3xl bg-white/10 backdrop-blur-md border border-white/20 p-6 text-left">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-3">
               <div 
-                className="cursor-pointer group hover:bg-white/5 p-2 rounded-xl transition-all flex flex-col justify-center"
+                className="cursor-pointer group hover:bg-white/10 p-3 rounded-2xl transition-all flex items-center justify-between gap-4"
                 onClick={() => handleCopyToClipboard(sokhung, 'số khung')}
                 title="Click để sao chép"
               >
-                <div className="text-[11px] font-bold tracking-widest uppercase text-white/70 flex items-center gap-1.5">
-                  {t('chassis_number')}
-                  <Copy className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="text-[11px] font-bold tracking-widest uppercase text-white/70 whitespace-nowrap">{t('chassis_number')}:</span>
+                  <span className="text-base font-bold break-all">{sokhung}</span>
                 </div>
-                <div className="text-lg font-bold break-all flex items-center gap-1.5">
-                  {sokhung}
-                </div>
+                <Copy className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
               </div>
               <div 
-                className="cursor-pointer group hover:bg-white/5 p-2 rounded-xl transition-all flex flex-col justify-center"
+                className="cursor-pointer group hover:bg-white/10 p-3 rounded-2xl transition-all flex items-center justify-between gap-4"
                 onClick={() => handleCopyToClipboard(somay, 'số máy')}
                 title="Click để sao chép"
               >
-                <div className="text-[11px] font-bold tracking-widest uppercase text-white/70 flex items-center gap-1.5">
-                  {t('engine_number')}
-                  <Copy className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="text-[11px] font-bold tracking-widest uppercase text-white/70 whitespace-nowrap">{t('engine_number')}:</span>
+                  <span className="text-base font-bold break-all">{somay}</span>
                 </div>
-                <div className="text-lg font-bold break-all flex items-center gap-1.5">
-                  {somay}
-                </div>
+                <Copy className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
               </div>
             </div>
 
@@ -299,7 +295,7 @@ export function Warranty() {
 
                   <Button
                     type="submit"
-                    className="w-full h-11 bg-gradient-to-r from-[#4B0076] to-[#9366D9] hover:from-[#3b0060] hover:to-[#8050c7] text-white rounded-xl shadow-lg hover:shadow-xl font-bold transition-all duration-300"
+                    className="w-full h-11 bg-gradient-to-r from-[#4B0076] to-[#9366D9] hover:from-[#3b0060] hover:to-[#8050c7] text-white rounded-xl shadow-lg hover:shadow-xl font-bold transition-all duration-300 cursor-pointer"
                   >
                     Kiểm tra bảo hành
                   </Button>
@@ -346,14 +342,14 @@ export function Warranty() {
           <div className="flex gap-3">
             <Button
               variant="outline"
-              className="flex-1 rounded-full h-12"
+              className="flex-1 rounded-full h-12 cursor-pointer"
               onClick={clearQueryAndState}
               disabled={isActivating}
             >
               {t('cancel')}
             </Button>
             <Button
-              className="flex-1 bg-gradient-to-br from-[#4B0076] to-[#9366D9] text-white rounded-full h-12 hover:-translate-y-0.5 shadow-md"
+              className="flex-1 bg-gradient-to-br from-[#4B0076] to-[#9366D9] text-white rounded-full h-12 hover:-translate-y-0.5 shadow-md cursor-pointer"
               onClick={() => void handleConfirmActivate()}
               disabled={isActivating}
             >
@@ -526,7 +522,7 @@ export function Warranty() {
             {errorState?.message}
           </div>
           <Button
-            className="w-full bg-gradient-to-br from-[#4B0076] to-[#9366D9] text-white rounded-full h-12 hover:-translate-y-0.5 shadow-md"
+            className="w-full bg-gradient-to-br from-[#4B0076] to-[#9366D9] text-white rounded-full h-12 hover:-translate-y-0.5 shadow-md cursor-pointer"
             onClick={clearQueryAndState}
           >
             {t('close')}
