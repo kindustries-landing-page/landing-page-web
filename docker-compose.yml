@@ -1,0 +1,15 @@
+services:
+  klotus-landing-page-web:
+    build:
+      context: /opt/repos/klotus-split/landing-page-web
+      dockerfile: Dockerfile
+    container_name: klotus-landing-page-web
+    env_file:
+      - /opt/repos/klotus-split/landing-page-web/.env
+    restart: always
+    networks:
+      - npm-network
+
+networks:
+  npm-network:
+    external: true
