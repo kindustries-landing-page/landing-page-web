@@ -3,6 +3,10 @@ import { useSearchParams } from 'react-router';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { useTranslation, Trans } from 'react-i18next';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { toast } from 'sonner';
+import { Copy } from 'lucide-react';
 import {
   activateWarranty,
   checkWarranty,
@@ -53,6 +57,34 @@ export function Warranty() {
   const [checkResult, setCheckResult] = useState<WarrantyCheckResponse | null>(null);
   const [errorState, setErrorState] = useState<WarrantyErrorState | null>(null);
 
+  const [inputSokhung, setInputSokhung] = useState('');
+  const [inputSomay, setInputSomay] = useState('');
+
+  useEffect(() => {
+    setInputSokhung(sokhung);
+    setInputSomay(somay);
+  }, [sokhung, somay]);
+
+  const handleManualCheck = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (inputSokhung.trim() && inputSomay.trim()) {
+      setSearchParams({
+        sokhung: inputSokhung.trim(),
+        somay: inputSomay.trim(),
+      });
+    }
+  };
+
+  const handleCopyToClipboard = (text: string, label: string) => {
+    navigator.clipboard.writeText(text)
+      .then(() => {
+        toast.success(`Đã sao chép ${label} vào clipboard!`);
+      })
+      .catch(() => {
+        toast.error('Không thể sao chép. Vui lòng thử lại.');
+      });
+  };
+
   const hasQrParams = useMemo(() => Boolean(sokhung && somay), [sokhung, somay]);
 
   useEffect(() => {
@@ -76,16 +108,20 @@ export function Warranty() {
         if (result.active_warranty) {
           setActivationDate(formatDateTime(result.active_warranty.activated_at));
           setAlreadyActivatedModalOpen(true);
+          toast.info('Phương tiện đã được kích hoạt bảo hành trước đó.');
         } else {
           setConfirmModalOpen(true);
+          toast.success('Xác minh thông tin thành công. Sẵn sàng kích hoạt.');
         }
       } catch (error) {
         if (cancelled) return;
+        const errorMsg = extractApiError(error, t('warranty_not_found_msg'));
         setErrorState({
           title: t('warranty_not_found'),
-          message: extractApiError(error, t('warranty_not_found_msg')),
+          message: errorMsg,
         });
         setErrorModalOpen(true);
+        toast.error('Không tìm thấy thông tin xe. Vui lòng kiểm tra lại.');
       } finally {
         if (!cancelled) setIsChecking(false);
       }
@@ -119,13 +155,16 @@ export function Warranty() {
       setActivationDate(formatDateTime(result.activation.activated_at));
       setConfirmModalOpen(false);
       setActivatedSuccess(true);
+      toast.success('Kích hoạt bảo hành chính hãng thành công!');
     } catch (error) {
       setConfirmModalOpen(false);
+      const errorMsg = extractApiError(error, t('warranty_activation_error'));
       setErrorState({
         title: t('warranty_activation_error'),
-        message: extractApiError(error, t('warranty_activation_error')),
+        message: errorMsg,
       });
       setErrorModalOpen(true);
+      toast.error('Kích hoạt bảo hành thất bại. Vui lòng thử lại.');
     } finally {
       setIsActivating(false);
     }
@@ -146,17 +185,31 @@ export function Warranty() {
         {hasQrParams ? (
           <div className="relative z-10 w-full max-w-xl rounded-3xl bg-white/10 backdrop-blur-md border border-white/20 p-6 text-left">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <div className="text-[11px] font-bold tracking-widest uppercase text-white/70">
+              <div 
+                className="cursor-pointer group hover:bg-white/5 p-2 rounded-xl transition-all flex flex-col justify-center"
+                onClick={() => handleCopyToClipboard(sokhung, 'số khung')}
+                title="Click để sao chép"
+              >
+                <div className="text-[11px] font-bold tracking-widest uppercase text-white/70 flex items-center gap-1.5">
                   {t('chassis_number')}
+                  <Copy className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
-                <div className="text-lg font-bold break-all">{sokhung}</div>
+                <div className="text-lg font-bold break-all flex items-center gap-1.5">
+                  {sokhung}
+                </div>
               </div>
-              <div>
-                <div className="text-[11px] font-bold tracking-widest uppercase text-white/70">
+              <div 
+                className="cursor-pointer group hover:bg-white/5 p-2 rounded-xl transition-all flex flex-col justify-center"
+                onClick={() => handleCopyToClipboard(somay, 'số máy')}
+                title="Click để sao chép"
+              >
+                <div className="text-[11px] font-bold tracking-widest uppercase text-white/70 flex items-center gap-1.5">
                   {t('engine_number')}
+                  <Copy className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
-                <div className="text-lg font-bold break-all">{somay}</div>
+                <div className="text-lg font-bold break-all flex items-center gap-1.5">
+                  {somay}
+                </div>
               </div>
             </div>
 
@@ -178,23 +231,82 @@ export function Warranty() {
       </section>
 
       <section className="py-20 px-6 md:px-12 bg-white flex flex-col items-center">
-        <div className="max-w-2xl text-center space-y-4">
-          <h2 className="text-2xl md:text-3xl font-extrabold text-[#4B0076]">
-            Kích hoạt bảo hành bằng QR code
-          </h2>
-          <p className="text-zinc-600 leading-relaxed">
-            Khách quét QR từ xe sẽ được kiểm tra trạng thái bảo hành ngay lập tức. Nếu chưa kích
-            hoạt, hệ thống sẽ cho xác nhận kích hoạt. Nếu đã kích hoạt, landing page sẽ hiển thị
-            thời gian kích hoạt gần nhất.
-          </p>
-          {!hasQrParams ? (
-            <div className="rounded-2xl border border-dashed border-zinc-300 p-6 bg-zinc-50 text-zinc-500 text-sm">
-              Chưa có dữ liệu QR. Vui lòng truy cập link dạng
-              <div className="mt-2 font-mono text-xs break-all">
-                /bao-hanh?sokhung=RL9L3ABKPTAFS0010&somay=VLD60V800WN-008274
+        <div className="max-w-4xl w-full text-center space-y-10">
+          <div className="space-y-4">
+            <h2 className="text-3xl md:text-4xl font-black text-[#4B0076] tracking-tight">
+              Tra cứu & Kích hoạt bảo hành
+            </h2>
+            <p className="text-zinc-600 leading-relaxed max-w-2xl mx-auto">
+              Quý khách có thể lựa chọn một trong hai phương thức tiện lợi dưới đây để kiểm tra trạng thái bảo hành cũng như thực hiện kích hoạt trực tuyến cho phương tiện của mình.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-left items-stretch">
+            {/* Phương thức 1: Quét mã */}
+            <div className="rounded-3xl border border-zinc-150 p-8 bg-zinc-50/50 hover:bg-zinc-50 transition-all duration-300 flex flex-col justify-between shadow-sm">
+              <div className="space-y-4">
+                <div className="w-12 h-12 rounded-2xl bg-[#4B0076]/10 text-[#4B0076] flex items-center justify-center text-2xl font-bold">
+                  📱
+                </div>
+                <h3 className="text-xl font-bold text-zinc-900">Cách 1: Quét mã trên phương tiện</h3>
+                <p className="text-zinc-600 text-sm leading-relaxed">
+                  Sử dụng camera điện thoại hoặc ứng dụng quét mã để quét trực tiếp mã QR được dán trên khung xe. Hệ thống sẽ tự động nhận diện thông số và hiển thị kết quả kiểm tra tức thì mà không cần nhập liệu.
+                </p>
+              </div>
+              <div className="mt-6 pt-4 border-t border-zinc-100 text-xs text-zinc-400">
+                * Mã QR thường được đặt ở vị trí cốp xe hoặc cổ xe.
               </div>
             </div>
-          ) : null}
+
+            {/* Phương thức 2: Nhập thông tin */}
+            <div className="rounded-3xl border border-zinc-200 p-8 bg-white shadow-lg flex flex-col justify-between">
+              <div className="space-y-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-2xl bg-[#9366D9]/10 text-[#9366D9] flex items-center justify-center text-2xl font-bold">
+                    ✍️
+                  </div>
+                  <h3 className="text-xl font-bold text-zinc-900">Cách 2: Nhập thông tin thủ công</h3>
+                </div>
+                
+                <form onSubmit={handleManualCheck} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="sokhung-input" className="text-zinc-700 font-semibold">
+                      Số khung xe
+                    </Label>
+                    <Input
+                      id="sokhung-input"
+                      placeholder="Nhập số khung xe (ví dụ: RL9L3...)"
+                      value={inputSokhung}
+                      onChange={(e) => setInputSokhung(e.target.value)}
+                      className="h-11 px-4 border-zinc-300 rounded-xl focus:border-[#4B0076] focus:ring-1 focus:ring-[#4B0076]"
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="somay-input" className="text-zinc-700 font-semibold">
+                      Số máy xe
+                    </Label>
+                    <Input
+                      id="somay-input"
+                      placeholder="Nhập số máy xe (ví dụ: VLD60...)"
+                      value={inputSomay}
+                      onChange={(e) => setInputSomay(e.target.value)}
+                      className="h-11 px-4 border-zinc-300 rounded-xl focus:border-[#4B0076] focus:ring-1 focus:ring-[#4B0076]"
+                      required
+                    />
+                  </div>
+
+                  <Button
+                    type="submit"
+                    className="w-full h-11 bg-gradient-to-r from-[#4B0076] to-[#9366D9] hover:from-[#3b0060] hover:to-[#8050c7] text-white rounded-xl shadow-lg hover:shadow-xl font-bold transition-all duration-300"
+                  >
+                    Kiểm tra bảo hành
+                  </Button>
+                </form>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -206,15 +318,25 @@ export function Warranty() {
           <div className="text-zinc-600 text-[14px] text-center mb-6 leading-relaxed">
             {t('warranty_confirm_msg')}
             <div className="mt-4 p-4 bg-zinc-50 rounded-2xl border border-zinc-100 text-left space-y-2">
-              <div className="flex flex-col">
-                <span className="text-[11px] font-bold tracking-widest uppercase text-zinc-400">
+              <div 
+                className="flex flex-col cursor-pointer group hover:bg-zinc-100 p-2 rounded-xl transition-all"
+                onClick={() => handleCopyToClipboard(sokhung, 'số khung')}
+                title="Click để sao chép"
+              >
+                <span className="text-[11px] font-bold tracking-widest uppercase text-zinc-400 flex items-center gap-1.5">
                   {t('chassis_number')}
+                  <Copy className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </span>
                 <span className="font-bold text-[#4B0076] text-base break-all">{sokhung}</span>
               </div>
-              <div className="flex flex-col">
-                <span className="text-[11px] font-bold tracking-widest uppercase text-zinc-400">
+              <div 
+                className="flex flex-col cursor-pointer group hover:bg-zinc-100 p-2 rounded-xl transition-all"
+                onClick={() => handleCopyToClipboard(somay, 'số máy')}
+                title="Click để sao chép"
+              >
+                <span className="text-[11px] font-bold tracking-widest uppercase text-zinc-400 flex items-center gap-1.5">
                   {t('engine_number')}
+                  <Copy className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </span>
                 <span className="font-bold text-[#4B0076] text-base break-all">{somay}</span>
               </div>
@@ -255,14 +377,53 @@ export function Warranty() {
             {t('activation_success_msg')}
           </div>
           {activationResult ? (
-            <div className="rounded-2xl bg-zinc-50 border border-zinc-100 p-4 text-left text-sm text-zinc-700 mb-6 space-y-1">
-              <div>
-                {t('activation_success_detail', {
-                  code: activationResult.activation.warranty_code,
-                  date: formatDateTime(activationResult.activation.activated_at),
-                  endDate: formatDate(activationResult.activation.warranty_end_date),
-                })}
+            <div className="rounded-2xl bg-zinc-50 border border-zinc-150 p-5 text-left text-sm text-zinc-700 mb-6 space-y-3 shadow-inner">
+              <div className="font-semibold text-zinc-950 border-b border-zinc-200/60 pb-2">
+                Thông tin bảo hành của bạn:
               </div>
+              <ul className="space-y-2.5">
+                <li 
+                  className="flex items-center justify-between cursor-pointer group hover:bg-zinc-100/50 p-1.5 rounded-lg transition-all"
+                  onClick={() => handleCopyToClipboard(activationResult.activation.warranty_code, 'mã bảo hành')}
+                  title="Click để sao chép"
+                >
+                  <div className="flex items-start gap-2">
+                    <span className="text-[#4B0076] font-bold">•</span>
+                    <span>Mã bảo hành: <strong className="font-extrabold text-[#4B0076]">{activationResult.activation.warranty_code}</strong></span>
+                  </div>
+                  <Copy className="w-3.5 h-3.5 text-[#4B0076] opacity-60 group-hover:opacity-100 transition-opacity" />
+                </li>
+                <li 
+                  className="flex items-center justify-between cursor-pointer group hover:bg-zinc-100/50 p-1.5 rounded-lg transition-all"
+                  onClick={() => handleCopyToClipboard(sokhung, 'số khung')}
+                  title="Click để sao chép"
+                >
+                  <div className="flex items-start gap-2">
+                    <span className="text-[#4B0076] font-bold">•</span>
+                    <span>Số khung: <strong className="font-bold text-zinc-900">{sokhung}</strong></span>
+                  </div>
+                  <Copy className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </li>
+                <li 
+                  className="flex items-center justify-between cursor-pointer group hover:bg-zinc-100/50 p-1.5 rounded-lg transition-all"
+                  onClick={() => handleCopyToClipboard(somay, 'số máy')}
+                  title="Click để sao chép"
+                >
+                  <div className="flex items-start gap-2">
+                    <span className="text-[#4B0076] font-bold">•</span>
+                    <span>Số máy: <strong className="font-bold text-zinc-900">{somay}</strong></span>
+                  </div>
+                  <Copy className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </li>
+                <li className="flex items-start gap-2 p-1.5">
+                  <span className="text-[#4B0076] font-bold">•</span>
+                  <span>Kích hoạt lúc: <strong className="font-bold text-zinc-900">{formatDateTime(activationResult.activation.activated_at)}</strong></span>
+                </li>
+                <li className="flex items-start gap-2 p-1.5">
+                  <span className="text-[#4B0076] font-bold">•</span>
+                  <span>Hiệu lực đến: <strong className="font-bold text-zinc-900">{formatDate(activationResult.activation.warranty_end_date)}</strong></span>
+                </li>
+              </ul>
             </div>
           ) : null}
           <Button
@@ -294,20 +455,57 @@ export function Warranty() {
           <DialogTitle className="text-2xl font-extrabold text-[#4B0076] mb-2">
             {t('already_activated')}
           </DialogTitle>
-          <div className="text-zinc-600 text-[14px] mb-3 leading-relaxed">
-            <Trans
-              i18nKey="already_activated_msg"
-              values={{ sokhung, date: activationDate }}
-              components={{
-                1: <strong className="font-bold text-[#4B0076]" />,
-                2: <strong className="font-bold text-[#4B0076]" />,
-              }}
-            />
+          <div className="text-zinc-600 text-[14px] mb-4 leading-relaxed">
+            Xe có số khung <strong className="font-bold text-[#4B0076] break-all">{sokhung}</strong> và số máy <strong className="font-bold text-[#4B0076] break-all">{somay}</strong> đã được kích hoạt bảo hành trước đó.
           </div>
           {checkResult?.active_warranty ? (
-            <div className="rounded-2xl bg-zinc-50 border border-zinc-100 p-4 text-left text-sm text-zinc-700 mb-6 space-y-1">
-              <div>Mã bảo hành: {checkResult.active_warranty.warranty_code}</div>
-              <div>Hiệu lực đến: {formatDate(checkResult.active_warranty.warranty_end_date)}</div>
+            <div className="rounded-2xl bg-zinc-50 border border-zinc-150 p-5 text-left text-sm text-zinc-700 mb-6 space-y-3 shadow-inner">
+              <div className="font-semibold text-zinc-950 border-b border-zinc-200/60 pb-2">
+                Thông tin bảo hành đã kích hoạt:
+              </div>
+              <ul className="space-y-2.5">
+                <li 
+                  className="flex items-center justify-between cursor-pointer group hover:bg-zinc-100/50 p-1.5 rounded-lg transition-all"
+                  onClick={() => handleCopyToClipboard(checkResult.active_warranty!.warranty_code, 'mã bảo hành')}
+                  title="Click để sao chép"
+                >
+                  <div className="flex items-start gap-2">
+                    <span className="text-[#4B0076] font-bold">•</span>
+                    <span>Mã bảo hành: <strong className="font-extrabold text-[#4B0076]">{checkResult.active_warranty.warranty_code}</strong></span>
+                  </div>
+                  <Copy className="w-3.5 h-3.5 text-[#4B0076] opacity-60 group-hover:opacity-100 transition-opacity" />
+                </li>
+                <li 
+                  className="flex items-center justify-between cursor-pointer group hover:bg-zinc-100/50 p-1.5 rounded-lg transition-all"
+                  onClick={() => handleCopyToClipboard(sokhung, 'số khung')}
+                  title="Click để sao chép"
+                >
+                  <div className="flex items-start gap-2">
+                    <span className="text-[#4B0076] font-bold">•</span>
+                    <span>Số khung: <strong className="font-bold text-zinc-900">{sokhung}</strong></span>
+                  </div>
+                  <Copy className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </li>
+                <li 
+                  className="flex items-center justify-between cursor-pointer group hover:bg-zinc-100/50 p-1.5 rounded-lg transition-all"
+                  onClick={() => handleCopyToClipboard(somay, 'số máy')}
+                  title="Click để sao chép"
+                >
+                  <div className="flex items-start gap-2">
+                    <span className="text-[#4B0076] font-bold">•</span>
+                    <span>Số máy: <strong className="font-bold text-zinc-900">{somay}</strong></span>
+                  </div>
+                  <Copy className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </li>
+                <li className="flex items-start gap-2 p-1.5">
+                  <span className="text-[#4B0076] font-bold">•</span>
+                  <span>Kích hoạt lúc: <strong className="font-bold text-zinc-900">{formatDateTime(checkResult.active_warranty.activated_at)}</strong></span>
+                </li>
+                <li className="flex items-start gap-2 p-1.5">
+                  <span className="text-[#4B0076] font-bold">•</span>
+                  <span>Hiệu lực đến: <strong className="font-bold text-zinc-900">{formatDate(checkResult.active_warranty.warranty_end_date)}</strong></span>
+                </li>
+              </ul>
             </div>
           ) : null}
           <Button

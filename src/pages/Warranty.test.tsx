@@ -141,4 +141,35 @@ describe('Warranty page', () => {
 
     expect(await screen.findByText('Xác nhận kích hoạt')).toBeInTheDocument();
   });
+
+  it('triggers check when user submits form manually', async () => {
+    const user = userEvent.setup();
+    mockCheckWarranty.mockResolvedValue({
+      found: true,
+      vehicle: {
+        frame_no: 'FRAME_MANUAL',
+        engine_no: 'ENGINE_MANUAL',
+        model_name: 'Klotus S1',
+        model_code: 'S1',
+        warranty_status: 'NOT_ACTIVATED',
+      },
+      active_warranty: null,
+    });
+
+    render(
+      <MemoryRouter initialEntries={['/bao-hanh']}>
+        <Warranty />
+      </MemoryRouter>
+    );
+
+    const sokhungInput = screen.getByLabelText('Số khung xe');
+    const somayInput = screen.getByLabelText('Số máy xe');
+    const checkButton = screen.getByRole('button', { name: 'Kiểm tra bảo hành' });
+
+    await user.type(sokhungInput, 'FRAME_MANUAL');
+    await user.type(somayInput, 'ENGINE_MANUAL');
+    await user.click(checkButton);
+
+    expect(await screen.findByText('Xác nhận kích hoạt')).toBeInTheDocument();
+  });
 });

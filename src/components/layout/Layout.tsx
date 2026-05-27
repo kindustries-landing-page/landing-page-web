@@ -3,6 +3,7 @@ import { Navbar } from './Navbar';
 import { Footer } from './Footer';
 import { useAppStore } from '@/src/store';
 import { useTranslation } from 'react-i18next';
+import { Toaster } from '@/components/ui/sonner';
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const setTestDriveOpen = useAppStore(state => state.setTestDriveOpen);
@@ -75,6 +76,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         </button>
       </div>
       */}
+      <Toaster />
     </div>
   );
 }
