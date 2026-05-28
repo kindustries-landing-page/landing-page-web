@@ -29,7 +29,7 @@ export function Home() {
             className="inline-flex items-center gap-2 bg-white/70 backdrop-blur-md border border-purple-400/30 rounded-full px-5 py-2 text-[12px] font-bold text-[#4B0076] tracking-widest uppercase mb-8 shadow-sm"
           >
             <span className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse" />
-            Ra mắt 2025 · Made in Vietnam
+            Ra mắt 2026 · Made in Vietnam
           </motion.div>
           
           <h1 className="text-6xl md:text-8xl font-black leading-none tracking-tighter mb-8 drop-shadow-sm">

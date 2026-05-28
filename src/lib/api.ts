@@ -1,10 +1,27 @@
 import axios from 'axios';
 import { Product } from '@/src/types';
+import { toast } from 'sonner';
+import i18n from '@/src/i18n';
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL?.trim() || 'http://localhost:10000/api/v1',
   timeout: 15000,
 });
+
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (axios.isAxiosError(error)) {
+      const status = error.response?.status;
+      if (status === 400) {
+        toast.error(i18n.t('invalid_info'));
+      } else if (status === 500) {
+        toast.error(i18n.t('server_error_try_again'));
+      }
+    }
+    return Promise.reject(error);
+  }
+);
 
 export type WarrantyCheckResponse = {
   found: boolean;

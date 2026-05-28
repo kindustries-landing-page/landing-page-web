@@ -51,11 +51,9 @@ export function Warranty() {
   const [isChecking, setIsChecking] = useState(false);
   const [isActivating, setIsActivating] = useState(false);
   const [alreadyActivatedModalOpen, setAlreadyActivatedModalOpen] = useState(false);
-  const [errorModalOpen, setErrorModalOpen] = useState(false);
   const [activationDate, setActivationDate] = useState('');
   const [activationResult, setActivationResult] = useState<WarrantyActivateResponse | null>(null);
   const [checkResult, setCheckResult] = useState<WarrantyCheckResponse | null>(null);
-  const [errorState, setErrorState] = useState<WarrantyErrorState | null>(null);
 
   const [inputSokhung, setInputSokhung] = useState('');
   const [inputSomay, setInputSomay] = useState('');
@@ -96,7 +94,6 @@ export function Warranty() {
       setIsChecking(true);
       setConfirmModalOpen(false);
       setAlreadyActivatedModalOpen(false);
-      setErrorModalOpen(false);
       setActivationResult(null);
       setCheckResult(null);
 
@@ -115,13 +112,6 @@ export function Warranty() {
         }
       } catch (error) {
         if (cancelled) return;
-        const errorMsg = extractApiError(error, t('warranty_not_found_msg'));
-        setErrorState({
-          title: t('warranty_not_found'),
-          message: errorMsg,
-        });
-        setErrorModalOpen(true);
-        toast.error('Không tìm thấy thông tin xe. Vui lòng kiểm tra lại.');
       } finally {
         if (!cancelled) setIsChecking(false);
       }
@@ -138,10 +128,8 @@ export function Warranty() {
     setConfirmModalOpen(false);
     setAlreadyActivatedModalOpen(false);
     setActivatedSuccess(false);
-    setErrorModalOpen(false);
     setActivationResult(null);
     setCheckResult(null);
-    setErrorState(null);
     setSearchParams({});
   };
 
@@ -158,13 +146,6 @@ export function Warranty() {
       toast.success('Kích hoạt bảo hành chính hãng thành công!');
     } catch (error) {
       setConfirmModalOpen(false);
-      const errorMsg = extractApiError(error, t('warranty_activation_error'));
-      setErrorState({
-        title: t('warranty_activation_error'),
-        message: errorMsg,
-      });
-      setErrorModalOpen(true);
-      toast.error('Kích hoạt bảo hành thất bại. Vui lòng thử lại.');
     } finally {
       setIsActivating(false);
     }
@@ -250,7 +231,7 @@ export function Warranty() {
                 </p>
               </div>
               <div className="mt-6 pt-4 border-t border-zinc-100 text-xs text-zinc-400">
-                * Mã QR thường được đặt ở vị trí cốp xe hoặc cổ xe.
+                * Mã QR thường được đặt ở vị trí cốp xe hoặc đuôi xe.
               </div>
             </div>
 
@@ -513,22 +494,6 @@ export function Warranty() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={errorModalOpen} onOpenChange={clearQueryAndState}>
-        <DialogContent className="w-[calc(100%-2rem)] sm:w-full max-w-[420px] bg-white/95 backdrop-blur-3xl border border-white rounded-[28px] p-8 shadow-[0_48px_100px_rgba(75,0,118,0.2)] text-center">
-          <DialogTitle className="text-2xl font-extrabold text-red-600 mb-2">
-            {errorState?.title}
-          </DialogTitle>
-          <div className="text-zinc-600 text-[14px] mb-6 leading-relaxed">
-            {errorState?.message}
-          </div>
-          <Button
-            className="w-full bg-gradient-to-br from-[#4B0076] to-[#9366D9] text-white rounded-full h-12 hover:-translate-y-0.5 shadow-md cursor-pointer"
-            onClick={clearQueryAndState}
-          >
-            {t('close')}
-          </Button>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

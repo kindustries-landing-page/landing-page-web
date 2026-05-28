@@ -38,6 +38,8 @@ const en = {
     designed_by: 'Designed by K Lotus Team',
     explore_now: 'Explore the collection',
     free_test_drive: 'Free test drive',
+    invalid_info: 'Invalid information',
+    server_error_try_again: 'Please try again later',
   },
 };
 
@@ -79,6 +81,8 @@ const vi = {
     designed_by: 'Thiết kế bởi K Lotus Team',
     explore_now: 'Khám phá xe ngay',
     free_test_drive: 'Lái thử miễn phí',
+    invalid_info: 'Thông tin không hợp lệ',
+    server_error_try_again: 'Vui lòng thử lại sau',
   },
 };
 
