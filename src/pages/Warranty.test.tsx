@@ -172,4 +172,29 @@ describe('Warranty page', () => {
 
     expect(await screen.findByText('Xác nhận kích hoạt')).toBeInTheDocument();
   });
+
+  it('parses malformed query when somay is concatenated without ampersand', async () => {
+    mockCheckWarranty.mockResolvedValue({
+      found: true,
+      vehicle: {
+        frame_no: 'FRAME001',
+        engine_no: 'ENGINE001',
+        model_name: 'Klotus S1',
+        model_code: 'S1',
+        warranty_status: 'NOT_ACTIVATED',
+      },
+      active_warranty: null,
+    });
+
+    render(
+      <MemoryRouter initialEntries={['/bao-hanh?sokhung=FRAME001somay=ENGINE001']}>
+        <Warranty />
+      </MemoryRouter>
+    );
+
+    expect(await screen.findByText('Xác nhận kích hoạt')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(mockCheckWarranty).toHaveBeenCalledWith('FRAME001', 'ENGINE001');
+    });
+  });
 });

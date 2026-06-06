@@ -20,6 +20,31 @@ type WarrantyErrorState = {
   message: string;
 };
 
+const getWarrantyQueryParams = (searchParams: URLSearchParams) => {
+  const rawSokhung = searchParams.get('sokhung')?.trim() ?? '';
+  const rawSomay = searchParams.get('somay')?.trim() ?? '';
+
+  if (rawSomay) {
+    return {
+      sokhung: rawSokhung,
+      somay: rawSomay,
+    };
+  }
+
+  const malformedMatch = rawSokhung.match(/^(.*?)(?:&)?somay=(.+)$/i);
+  if (malformedMatch) {
+    return {
+      sokhung: malformedMatch[1].trim(),
+      somay: malformedMatch[2].trim(),
+    };
+  }
+
+  return {
+    sokhung: rawSokhung,
+    somay: rawSomay,
+  };
+};
+
 const formatDateTime = (value?: string | null) => {
   if (!value) return '';
   return new Date(value).toLocaleString('vi-VN', {
@@ -43,8 +68,10 @@ const formatDate = (value?: string | null) => {
 export function Warranty() {
   const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
-  const sokhung = searchParams.get('sokhung')?.trim() ?? '';
-  const somay = searchParams.get('somay')?.trim() ?? '';
+  const { sokhung, somay } = useMemo(
+    () => getWarrantyQueryParams(searchParams),
+    [searchParams]
+  );
 
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [activatedSuccess, setActivatedSuccess] = useState(false);
