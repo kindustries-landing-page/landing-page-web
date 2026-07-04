@@ -12,7 +12,10 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "test": "vitest run",
-    "prepare": "command -v husky >/dev/null 2>&1 && husky || true"
+    "prepare": "command -v husky >/dev/null 2>&1 && husky || true",
+    "lint:check": "eslint \"src/**/*.{ts,tsx,js,jsx}\" --max-warnings=0",
+    "type:check": "tsc --noEmit",
+    "check:ci": "tsc --noEmit && eslint \"src/**/*.{ts,tsx,js,jsx}\" --max-warnings=0 && prettier --check ."
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": [
