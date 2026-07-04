@@ -1,19 +1,12 @@
 import React from 'react';
 import { Navbar } from './Navbar';
 import { Footer } from './Footer';
-import { useAppStore } from '@/src/store';
 import { useTranslation } from 'react-i18next';
 import { Toaster } from '@/components/ui/sonner';
 
 export function Layout({ children }: { children: React.ReactNode }) {
-  const setTestDriveOpen = useAppStore(state => state.setTestDriveOpen);
-  const { i18n } = useTranslation();
-  
-  const toggleLanguage = () => {
-    const newLang = i18n.language === 'vi' ? 'en' : 'vi';
-    i18n.changeLanguage(newLang);
-  };
-  
+  useTranslation();
+
   return (
     <div className="min-h-screen relative text-zinc-900 font-sans flex flex-col items-center overflow-x-hidden">
       {/* Global Background from demo.html */}
@@ -37,9 +30,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </div>
       */}
       <Navbar />
-      <main className="flex-1 w-full flex flex-col">
-        {children}
-      </main>
+      <main className="flex-1 w-full flex flex-col">{children}</main>
       <div className="w-full">
         <Footer />
       </div>

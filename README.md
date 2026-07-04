@@ -3,11 +3,13 @@
 Frontend landing page cho Klotus warranty/public funnel.
 
 ## Production target
+
 - host: `Head-Liouni`
 - domain: `klotus.liouni.com`
 - API: `api.klotus.vn`
 
 ## Phase 1 scope
+
 - route `/bao-hanh`
 - query QR: `sokhung`, `somay`
 - call API:
@@ -15,6 +17,7 @@ Frontend landing page cho Klotus warranty/public funnel.
   - `POST /api/v1/public/warranty/activate`
 
 ## Local run
+
 ```bash
 npm install
 npm run dev

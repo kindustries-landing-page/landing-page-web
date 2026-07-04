@@ -1,7 +1,7 @@
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
-import {defineConfig} from 'vitest/config';
+import { defineConfig } from 'vitest/config';
 import express from 'express';
 import { api } from './api';
 
@@ -11,7 +11,7 @@ const apiPlugin = () => ({
     const app = express();
     app.use('/api', api);
     server.middlewares.use(app);
-  }
+  },
 });
 
 export default defineConfig(() => {

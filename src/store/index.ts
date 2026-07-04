@@ -14,5 +14,5 @@ export const useAppStore = create<AppState>((set) => ({
   login: (user) => set({ user }),
   logout: () => set({ user: null }),
   isTestDriveOpen: false,
-  setTestDriveOpen: (isTestDriveOpen) => set({ isTestDriveOpen })
+  setTestDriveOpen: (isTestDriveOpen) => set({ isTestDriveOpen }),
 }));

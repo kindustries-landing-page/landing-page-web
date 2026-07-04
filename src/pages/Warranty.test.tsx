@@ -13,9 +13,9 @@ const mockExtractApiError = vi.fn((error: unknown, fallback: string) => {
 });
 
 vi.mock('@/src/lib/api', () => ({
-  checkWarranty: (...args: unknown[]) => mockCheckWarranty(...args),
-  activateWarranty: (...args: unknown[]) => mockActivateWarranty(...args),
-  extractApiError: (...args: unknown[]) => mockExtractApiError(...args),
+  checkWarranty: (sokhung: string, somay: string) => mockCheckWarranty(sokhung, somay),
+  activateWarranty: (payload: unknown) => mockActivateWarranty(payload),
+  extractApiError: (error: unknown, fallback: string) => mockExtractApiError(error, fallback),
 }));
 
 describe('Warranty page', () => {

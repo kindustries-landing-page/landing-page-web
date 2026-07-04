@@ -4,17 +4,16 @@ import { getProducts } from '@/src/lib/api';
 import { ProductSvgs } from '@/src/lib/svgs';
 import { useAppStore } from '@/src/store';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogClose } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Product } from '@/src/types';
 import { useNavigate } from 'react-router';
 import { motion } from 'motion/react';
-import { useTranslation } from 'react-next';
-import { useTranslation as useTranslationRef } from 'react-i18next'; // correct import
+import { useTranslation } from 'react-i18next';
 
 export function Home() {
-  const { t } = useTranslationRef();
-  const { data: products, isLoading } = useQuery({ queryKey: ['products'], queryFn: getProducts });
-  const setTestDriveOpen = useAppStore(state => state.setTestDriveOpen);
+  const { t } = useTranslation();
+  useQuery({ queryKey: ['products'], queryFn: getProducts });
+  const setTestDriveOpen = useAppStore((state) => state.setTestDriveOpen);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const navigate = useNavigate();
 
@@ -23,7 +22,7 @@ export function Home() {
       {/* Hero Section */}
       <section className="relative min-h-[600px] h-screen overflow-hidden flex items-center justify-center">
         <div className="relative z-10 text-center px-6 max-w-3xl flex flex-col items-center">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="inline-flex items-center gap-2 bg-white/70 backdrop-blur-md border border-purple-400/30 rounded-full px-5 py-2 text-[12px] font-bold text-[#4B0076] tracking-widest uppercase mb-8 shadow-sm"
@@ -31,13 +30,36 @@ export function Home() {
             <span className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse" />
             Ra mắt 2026 · Made in Vietnam
           </motion.div>
-          
+
           <h1 className="text-6xl md:text-8xl font-black leading-none tracking-tighter mb-8 drop-shadow-sm">
-            <span className="block overflow-hidden"><motion.span initial={{ y: '100%' }} animate={{ y: 0 }} transition={{ duration: 0.8, ease: [0.16,1,0.3,1] }} className="inline-block text-zinc-900">{t('title') ? t('title').split(' ').slice(0, 2).join(' ') : 'Xe Điện'}</motion.span></span>
-            <span className="block overflow-hidden pb-4"><motion.span initial={{ y: '100%' }} animate={{ y: 0 }} transition={{ duration: 0.8, delay: 0.2, ease: [0.16,1,0.3,1] }} className="inline-block bg-gradient-to-br from-[#4B0076] via-[#a855f7] to-[#e879f9] bg-clip-text text-transparent">{t('title') ? t('title').split(' ').slice(2).join(' ') : 'Thế Hệ Mới'}</motion.span></span>
+            <span className="block overflow-hidden">
+              <motion.span
+                initial={{ y: '100%' }}
+                animate={{ y: 0 }}
+                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                className="inline-block text-zinc-900"
+              >
+                {t('title') ? t('title').split(' ').slice(0, 2).join(' ') : 'Xe Điện'}
+              </motion.span>
+            </span>
+            <span className="block overflow-hidden pb-4">
+              <motion.span
+                initial={{ y: '100%' }}
+                animate={{ y: 0 }}
+                transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                className="inline-block bg-gradient-to-br from-[#4B0076] via-[#a855f7] to-[#e879f9] bg-clip-text text-transparent"
+              >
+                {t('title') ? t('title').split(' ').slice(2).join(' ') : 'Thế Hệ Mới'}
+              </motion.span>
+            </span>
           </h1>
-          
-          <motion.p initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1, delay: 0.5 }} className="text-lg md:text-xl text-zinc-600/90 font-medium leading-relaxed max-w-xl mx-auto mb-10">
+
+          <motion.p
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 0.5 }}
+            className="text-lg md:text-xl text-zinc-600/90 font-medium leading-relaxed max-w-xl mx-auto mb-10"
+          >
             {t('subtitle')}
           </motion.p>
 
@@ -146,34 +168,51 @@ export function Home() {
                 {ProductSvgs[selectedProduct.id]}
               </div>
               <div className="p-7 md:p-9 pt-5">
-                <DialogTitle className="text-3xl font-black text-[#4B0076]">{selectedProduct.n}</DialogTitle>
-                <div className="text-xs text-zinc-400 tracking-wide mt-1 mb-3.5">{selectedProduct.m}</div>
-                <div className="text-3xl font-black bg-gradient-to-br from-[#4B0076] to-purple-500 bg-clip-text text-transparent mb-5">{selectedProduct.p}</div>
-                
+                <DialogTitle className="text-3xl font-black text-[#4B0076]">
+                  {selectedProduct.n}
+                </DialogTitle>
+                <div className="text-xs text-zinc-400 tracking-wide mt-1 mb-3.5">
+                  {selectedProduct.m}
+                </div>
+                <div className="text-3xl font-black bg-gradient-to-br from-[#4B0076] to-purple-500 bg-clip-text text-transparent mb-5">
+                  {selectedProduct.p}
+                </div>
+
                 <div className="grid grid-cols-2 gap-2.5 mb-5">
                   {selectedProduct.s.map((spec, i) => (
-                    <div key={i} className="bg-[#4B0076]/5 rounded-2xl p-3 border border-[#4B0076]/5">
-                      <div className="text-[10.5px] text-purple-500 font-bold uppercase tracking-wide mb-1 flex items-center gap-1">{spec[0]}</div>
+                    <div
+                      key={i}
+                      className="bg-[#4B0076]/5 rounded-2xl p-3 border border-[#4B0076]/5"
+                    >
+                      <div className="text-[10.5px] text-purple-500 font-bold uppercase tracking-wide mb-1 flex items-center gap-1">
+                        {spec[0]}
+                      </div>
                       <div className="text-[15px] font-bold text-[#4B0076]">{spec[1]}</div>
                     </div>
                   ))}
                 </div>
-                
+
                 <DialogDescription className="text-sm text-zinc-600 leading-relaxed mb-6">
                   {selectedProduct.d}
                 </DialogDescription>
-                
+
                 <div className="flex gap-3">
-                  <Button 
+                  <Button
                     className="flex-1 bg-gradient-to-br from-[#4B0076] to-[#9366D9] text-white font-bold h-12 rounded-full shadow-[0_8px_32px_rgba(75,0,118,0.35)] hover:-translate-y-0.5 transition-transform"
-                    onClick={() => { setSelectedProduct(null); setTestDriveOpen(true); }}
+                    onClick={() => {
+                      setSelectedProduct(null);
+                      setTestDriveOpen(true);
+                    }}
                   >
                     Đặt lịch lái thử
                   </Button>
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     className="flex-1 border-[#4B0076]/20 text-[#4B0076] font-semibold h-12 rounded-full hover:bg-white hover:border-purple-400 shadow-sm"
-                    onClick={() => { setSelectedProduct(null); navigate('/stores'); }}
+                    onClick={() => {
+                      setSelectedProduct(null);
+                      navigate('/stores');
+                    }}
                   >
                     Tìm cửa hàng
                   </Button>

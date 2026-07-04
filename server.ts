@@ -1,21 +1,21 @@
-import express from "express";
-import path from "path";
-import { createServer as createViteServer } from "vite";
+import express from 'express';
+import path from 'path';
+import { createServer as createViteServer } from 'vite';
 
-import { api } from "./api";
+import { api } from './api';
 
 async function startServer() {
   const app = express();
   const PORT = 3000;
 
   // Use API endpoints from api.ts
-  app.use("/api", api);
+  app.use('/api', api);
 
   // Vite middleware setup
-  if (process.env.NODE_ENV !== "production") {
+  if (process.env.NODE_ENV !== 'production') {
     const vite = await createViteServer({
       server: { middlewareMode: true },
-      appType: "spa",
+      appType: 'spa',
     });
     app.use(vite.middlewares);
   } else {
@@ -26,7 +26,7 @@ async function startServer() {
     });
   }
 
-  app.listen(PORT, "0.0.0.0", () => {
+  app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server running on port ${PORT}`);
   });
 }

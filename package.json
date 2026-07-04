@@ -4,18 +4,18 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build && esbuild server.ts --bundle --platform=node --format=cjs --packages=external --sourcemap --outfile=dist/server.cjs",
+    "dev": "bunx vite",
+    "build": "bunx vite build && bunx esbuild server.ts --bundle --platform=node --format=cjs --packages=external --sourcemap --outfile=dist/server.cjs",
     "start": "node dist/server.cjs",
-    "preview": "vite preview",
+    "preview": "bunx vite preview",
     "clean": "rm -rf dist server.js",
-    "lint": "eslint .",
-    "format": "prettier --write .",
-    "test": "vitest run",
+    "lint": "bunx eslint .",
+    "format": "bunx prettier --write .",
+    "test": "bunx vitest run",
     "prepare": "command -v husky >/dev/null 2>&1 && husky || true",
-    "lint:check": "eslint \"src/**/*.{ts,tsx,js,jsx}\" --max-warnings=0",
-    "type:check": "tsc --noEmit",
-    "check:ci": "tsc --noEmit && eslint \"src/**/*.{ts,tsx,js,jsx}\" --max-warnings=0 && prettier --check ."
+    "lint:check": "bunx eslint \"src/**/*.{ts,tsx,js,jsx}\" --max-warnings=0",
+    "type:check": "bunx tsc --noEmit",
+    "check:ci": "bunx tsc --noEmit && bunx eslint \"src/**/*.{ts,tsx,js,jsx}\" --max-warnings=0 && bunx prettier --check ."
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": [
@@ -72,6 +72,8 @@
     "tsx": "^4.21.0",
     "typescript": "~5.8.2",
     "typescript-eslint": "^8.60.0",
-    "vitest": "^4.1.7"
-  }
+    "vitest": "^4.1.7",
+    "@types/bun": "latest"
+  },
+  "packageManager": "bun@1.3.5"
 }

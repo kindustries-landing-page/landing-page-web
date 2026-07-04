@@ -9,7 +9,7 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ghcr.io/kindustries-landing-page/landing-page-web-klotus-master
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
 
 jobs:
   ci:
@@ -23,13 +23,13 @@ jobs:
         with:
           bun-version: 1.3.5
       - name: Install dependencies
-        run: npm install
+        run: bun install --frozen-lockfile
       - name: Check
-        run: npm run check:ci
+        run: bun run check:ci
       - name: Test
-        run: npm run test
+        run: bun run test
       - name: Build
-        run: npm run build
+        run: bun run build
 
   build-and-push:
     name: Build & Push to GHCR
