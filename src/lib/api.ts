@@ -47,9 +47,13 @@ export type WarrantyCheckResponse = {
 export type WarrantyActivatePayload = {
   sokhung: string;
   somay: string;
-  customer_name?: string;
-  customer_phone?: string;
-  notes?: string;
+  dealer_id: string;
+  dealer_name: string;
+  customer_name: string;
+  customer_address: string;
+  customer_phone: string;
+  customer_dob?: string;
+  customer_email?: string;
 };
 
 export type WarrantyActivateResponse = {
@@ -86,16 +90,14 @@ export const checkWarranty = async (
   sokhung: string,
   somay: string
 ): Promise<WarrantyCheckResponse> => {
-  const { data } = await api.get('/public/warranty/check', {
-    params: { sokhung, somay },
-  });
+  const { data } = await api.post('/public-warranty/check', { sokhung, somay });
   return data;
 };
 
 export const activateWarranty = async (
   payload: WarrantyActivatePayload
 ): Promise<WarrantyActivateResponse> => {
-  const { data } = await api.post('/public/warranty/activate', payload);
+  const { data } = await api.post('/public-warranty/activate', payload);
   return data;
 };
 

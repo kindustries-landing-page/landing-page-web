@@ -59,6 +59,13 @@ const formatDate = (value?: string | null) => {
   });
 };
 
+const DEALERS = [
+  { id: 'KL0001', name: 'Đại lý Khánh Huyền' },
+  { id: 'KL0002', name: 'Đại lý Trường Hiền' },
+  { id: 'KL0003', name: 'Đại lý Nhật Hải' },
+  { id: 'KL0005', name: 'Đại Lý Huy Hiệp' },
+];
+
 export function Warranty() {
   const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -74,6 +81,13 @@ export function Warranty() {
 
   const [inputSokhung, setInputSokhung] = useState('');
   const [inputSomay, setInputSomay] = useState('');
+
+  const [dealerId, setDealerId] = useState('');
+  const [customerName, setCustomerName] = useState('');
+  const [customerAddress, setCustomerAddress] = useState('');
+  const [customerPhone, setCustomerPhone] = useState('');
+  const [customerDob, setCustomerDob] = useState('');
+  const [customerEmail, setCustomerEmail] = useState('');
 
   useEffect(() => {
     setInputSokhung(sokhung);
@@ -150,18 +164,34 @@ export function Warranty() {
     setSearchParams({});
   };
 
-  const handleConfirmActivate = async () => {
+  const handleConfirmActivate = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     if (!hasQrParams) return;
+    if (!dealerId || !customerName || !customerAddress || !customerPhone) {
+      toast.error('Vui lòng nhập đầy đủ các trường bắt buộc');
+      return;
+    }
+    const dealerName = DEALERS.find((d) => d.id === dealerId)?.name || '';
 
     setIsActivating(true);
     try {
-      const result = await activateWarranty({ sokhung, somay });
+      const result = await activateWarranty({
+        sokhung,
+        somay,
+        dealer_id: dealerId,
+        dealer_name: dealerName,
+        customer_name: customerName,
+        customer_address: customerAddress,
+        customer_phone: customerPhone,
+        customer_dob: customerDob || undefined,
+        customer_email: customerEmail || undefined,
+      });
       setActivationResult(result);
       setConfirmModalOpen(false);
       setActivatedSuccess(true);
       toast.success('Kích hoạt bảo hành chính hãng thành công!');
     } catch {
-      setConfirmModalOpen(false);
+      // API error intercepted globally
     } finally {
       setIsActivating(false);
     }
@@ -315,55 +345,143 @@ export function Warranty() {
       </section>
 
       <Dialog open={confirmModalOpen} onOpenChange={setConfirmModalOpen}>
-        <DialogContent className="w-[calc(100%-2rem)] sm:w-full max-w-[420px] bg-white/95 backdrop-blur-3xl border border-white rounded-[28px] p-8 shadow-[0_48px_100px_rgba(75,0,118,0.2)]">
+        <DialogContent className="w-[calc(100%-2rem)] sm:w-full max-w-[500px] bg-white/95 backdrop-blur-3xl border border-white rounded-[28px] p-8 shadow-[0_48px_100px_rgba(75,0,118,0.2)] max-h-[90vh] overflow-y-auto">
           <DialogTitle className="text-2xl font-extrabold text-[#4B0076] mb-2 text-center">
-            {t('warranty_confirm')}
+            Thông tin kích hoạt
           </DialogTitle>
-          <div className="text-zinc-600 text-[14px] text-center mb-6 leading-relaxed">
-            {t('warranty_confirm_msg')}
-            <div className="mt-4 p-4 bg-zinc-50 rounded-2xl border border-zinc-100 text-left space-y-2">
-              <div
-                className="flex flex-col cursor-pointer group hover:bg-zinc-100 p-2 rounded-xl transition-all"
-                onClick={() => handleCopyToClipboard(sokhung, 'số khung')}
-                title="Click để sao chép"
-              >
-                <span className="text-[11px] font-bold tracking-widest uppercase text-zinc-400 flex items-center gap-1.5">
-                  {t('chassis_number')}
-                  <Copy className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                </span>
-                <span className="font-bold text-[#4B0076] text-base break-all">{sokhung}</span>
+          <div className="text-zinc-600 text-[14px] text-center mb-4 leading-relaxed">
+            Vui lòng điền thông tin để hoàn tất quá trình kích hoạt bảo hành.
+          </div>
+          <form onSubmit={handleConfirmActivate} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label className="text-zinc-700 font-semibold text-xs uppercase tracking-wide">
+                  Số khung
+                </Label>
+                <div className="h-10 px-3 bg-zinc-100 rounded-lg flex items-center text-sm font-bold text-zinc-900 border border-zinc-200">
+                  {sokhung}
+                </div>
               </div>
-              <div
-                className="flex flex-col cursor-pointer group hover:bg-zinc-100 p-2 rounded-xl transition-all"
-                onClick={() => handleCopyToClipboard(somay, 'số máy')}
-                title="Click để sao chép"
-              >
-                <span className="text-[11px] font-bold tracking-widest uppercase text-zinc-400 flex items-center gap-1.5">
-                  {t('engine_number')}
-                  <Copy className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                </span>
-                <span className="font-bold text-[#4B0076] text-base break-all">{somay}</span>
+              <div className="space-y-2">
+                <Label className="text-zinc-700 font-semibold text-xs uppercase tracking-wide">
+                  Số máy
+                </Label>
+                <div className="h-10 px-3 bg-zinc-100 rounded-lg flex items-center text-sm font-bold text-zinc-900 border border-zinc-200">
+                  {somay}
+                </div>
               </div>
             </div>
-          </div>
 
-          <div className="flex gap-3">
-            <Button
-              variant="outline"
-              className="flex-1 rounded-full h-12 cursor-pointer"
-              onClick={clearQueryAndState}
-              disabled={isActivating}
-            >
-              {t('cancel')}
-            </Button>
-            <Button
-              className="flex-1 bg-gradient-to-br from-[#4B0076] to-[#9366D9] text-white rounded-full h-12 hover:-translate-y-0.5 shadow-md cursor-pointer"
-              onClick={() => void handleConfirmActivate()}
-              disabled={isActivating}
-            >
-              {isActivating ? 'Đang kích hoạt...' : t('confirm')}
-            </Button>
-          </div>
+            <div className="space-y-2">
+              <Label htmlFor="dealer" className="text-zinc-700 font-semibold text-sm">
+                Đại lý kích hoạt <span className="text-red-500">*</span>
+              </Label>
+              <select
+                id="dealer"
+                required
+                value={dealerId}
+                onChange={(e) => setDealerId(e.target.value)}
+                className="w-full h-11 px-4 border border-zinc-300 rounded-xl focus:border-[#4B0076] focus:ring-1 focus:ring-[#4B0076] text-sm bg-white"
+              >
+                <option value="">-- Chọn đại lý --</option>
+                {DEALERS.map((d) => (
+                  <option key={d.id} value={d.id}>
+                    {d.id} - {d.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="custName" className="text-zinc-700 font-semibold text-sm">
+                Họ và Tên khách hàng <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                id="custName"
+                required
+                placeholder="Nguyễn Văn A"
+                value={customerName}
+                onChange={(e) => setCustomerName(e.target.value)}
+                className="h-11 px-4 border-zinc-300 rounded-xl focus:border-[#4B0076] focus:ring-1 focus:ring-[#4B0076]"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="custPhone" className="text-zinc-700 font-semibold text-sm">
+                Số điện thoại <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                id="custPhone"
+                type="tel"
+                required
+                placeholder="0912345678"
+                value={customerPhone}
+                onChange={(e) => setCustomerPhone(e.target.value)}
+                className="h-11 px-4 border-zinc-300 rounded-xl focus:border-[#4B0076] focus:ring-1 focus:ring-[#4B0076]"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="custAddr" className="text-zinc-700 font-semibold text-sm">
+                Địa chỉ <span className="text-red-500">*</span>
+              </Label>
+              <Input
+                id="custAddr"
+                required
+                placeholder="Số nhà, Đường, Quận/Huyện, Tỉnh/Thành"
+                value={customerAddress}
+                onChange={(e) => setCustomerAddress(e.target.value)}
+                className="h-11 px-4 border-zinc-300 rounded-xl focus:border-[#4B0076] focus:ring-1 focus:ring-[#4B0076]"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="custDob" className="text-zinc-700 font-semibold text-sm">
+                  Ngày sinh
+                </Label>
+                <Input
+                  id="custDob"
+                  type="date"
+                  value={customerDob}
+                  onChange={(e) => setCustomerDob(e.target.value)}
+                  className="h-11 px-4 border-zinc-300 rounded-xl focus:border-[#4B0076] focus:ring-1 focus:ring-[#4B0076]"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="custEmail" className="text-zinc-700 font-semibold text-sm">
+                  Email
+                </Label>
+                <Input
+                  id="custEmail"
+                  type="email"
+                  placeholder="email@example.com"
+                  value={customerEmail}
+                  onChange={(e) => setCustomerEmail(e.target.value)}
+                  className="h-11 px-4 border-zinc-300 rounded-xl focus:border-[#4B0076] focus:ring-1 focus:ring-[#4B0076]"
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-3 pt-4">
+              <Button
+                type="button"
+                variant="outline"
+                className="flex-1 rounded-full h-12 cursor-pointer"
+                onClick={clearQueryAndState}
+                disabled={isActivating}
+              >
+                {t('cancel')}
+              </Button>
+              <Button
+                type="submit"
+                className="flex-1 bg-gradient-to-br from-[#4B0076] to-[#9366D9] text-white rounded-full h-12 hover:-translate-y-0.5 shadow-md cursor-pointer"
+                disabled={isActivating}
+              >
+                {isActivating ? 'Đang kích hoạt...' : t('confirm')}
+              </Button>
+            </div>
+          </form>
         </DialogContent>
       </Dialog>
 
