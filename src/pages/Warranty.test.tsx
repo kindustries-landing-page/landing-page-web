@@ -103,9 +103,8 @@ describe('Warranty page', () => {
       },
       vehicle: {
         id: 'v1',
-        frame_no: 'FRAME001',
+        vin_no: 'FRAME001',
         engine_no: 'ENGINE001',
-        vin: 'VIN001',
         warranty_status: 'ACTIVE',
       },
     });
@@ -137,8 +136,8 @@ describe('Warranty page', () => {
 
     await waitFor(() => {
       expect(mockActivateWarranty).toHaveBeenCalledWith({
-        sokhung: 'FRAME001',
-        somay: 'ENGINE001',
+        vin_no: 'FRAME001',
+        engine_no: 'ENGINE001',
         customer_name: 'Nguyen Van A',
         customer_phone: '0987654321',
         customer_address: 'Hanoi',
@@ -152,9 +151,10 @@ describe('Warranty page', () => {
     expect(await screen.findByText('Kích hoạt thành công!')).toBeInTheDocument();
   });
 
-  it('opens confirm modal when vehicle is not found in DB yet', async () => {
+  it('shows not found modal when vehicle is not found in DB', async () => {
     mockCheckWarranty.mockResolvedValue({
       found: false,
+      reason: 'VEHICLE_NOT_FOUND',
       vehicle: null,
       active_warranty: null,
     });
@@ -165,7 +165,31 @@ describe('Warranty page', () => {
       </MemoryRouter>
     );
 
-    expect(await screen.findByText('Thông tin kích hoạt')).toBeInTheDocument();
+    expect(await screen.findByText('Không tìm thấy thông tin xe.')).toBeInTheDocument();
+  });
+
+  it('shows not delivered modal when vehicle is not SOLD', async () => {
+    mockCheckWarranty.mockResolvedValue({
+      found: true,
+      eligible: false,
+      reason: 'NOT_DELIVERED',
+      vehicle: {
+        vin_no: 'FRAME_NOT_SOLD',
+        engine_no: 'ENGINE_NOT_SOLD',
+        model_name: 'Klotus S1',
+        model_code: 'S1',
+        warranty_status: 'NOT_ACTIVATED',
+      },
+      active_warranty: null,
+    });
+
+    render(
+      <MemoryRouter initialEntries={['/bao-hanh?sokhung=FRAME_NOT_SOLD&somay=ENGINE_NOT_SOLD']}>
+        <Warranty />
+      </MemoryRouter>
+    );
+
+    expect(await screen.findByText('Chưa sẵn sàng kích hoạt')).toBeInTheDocument();
   });
 
   it('triggers check when user submits form manually', async () => {

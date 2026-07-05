@@ -32,10 +32,11 @@ api.interceptors.response.use(
 
 export type WarrantyCheckResponse = {
   found: boolean;
+  eligible?: boolean;
+  reason?: string;
   vehicle: {
-    frame_no: string;
+    vin_no: string;
     engine_no: string;
-    vin?: string | null;
     model_code?: string | null;
     model_name?: string | null;
     warranty_status: string;
@@ -56,8 +57,8 @@ export type WarrantyCheckResponse = {
 };
 
 export type WarrantyActivatePayload = {
-  sokhung: string;
-  somay: string;
+  vin_no: string;
+  engine_no: string;
   dealer_id: string;
   dealer_name: string;
   customer_name: string;
@@ -80,9 +81,8 @@ export type WarrantyActivateResponse = {
   };
   vehicle: {
     id: string;
-    frame_no: string;
+    vin_no: string;
     engine_no: string;
-    vin?: string | null;
     warranty_status: string;
   };
 };
@@ -101,7 +101,7 @@ export const checkWarranty = async (
   sokhung: string,
   somay: string
 ): Promise<WarrantyCheckResponse> => {
-  const { data } = await api.post('/public-warranty/check', { sokhung, somay });
+  const { data } = await api.post('/public-warranty/check', { vin_no: sokhung, engine_no: somay });
   return data;
 };
 

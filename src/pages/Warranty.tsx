@@ -88,6 +88,8 @@ export function Warranty() {
   const [isChecking, setIsChecking] = useState(false);
   const [isActivating, setIsActivating] = useState(false);
   const [alreadyActivatedModalOpen, setAlreadyActivatedModalOpen] = useState(false);
+  const [notFoundModalOpen, setNotFoundModalOpen] = useState(false);
+  const [notDeliveredModalOpen, setNotDeliveredModalOpen] = useState(false);
   const [activationResult, setActivationResult] = useState<WarrantyActivateResponse | null>(null);
   const [checkResult, setCheckResult] = useState<WarrantyCheckResponse | null>(null);
 
@@ -140,6 +142,8 @@ export function Warranty() {
       setIsChecking(true);
       setConfirmModalOpen(false);
       setAlreadyActivatedModalOpen(false);
+      setNotFoundModalOpen(false);
+      setNotDeliveredModalOpen(false);
       setActivationResult(null);
       setCheckResult(null);
 
@@ -148,7 +152,13 @@ export function Warranty() {
         if (cancelled) return;
 
         setCheckResult(result);
-        if (result.active_warranty) {
+        if (!result.found) {
+          setNotFoundModalOpen(true);
+          toast.error(t('warranty_not_found'));
+        } else if (result.eligible === false) {
+          setNotDeliveredModalOpen(true);
+          toast.error(t('not_delivered'));
+        } else if (result.active_warranty) {
           setAlreadyActivatedModalOpen(true);
           toast.info('Phương tiện đã được kích hoạt bảo hành trước đó.');
         } else {
@@ -172,6 +182,8 @@ export function Warranty() {
   const clearQueryAndState = () => {
     setConfirmModalOpen(false);
     setAlreadyActivatedModalOpen(false);
+    setNotFoundModalOpen(false);
+    setNotDeliveredModalOpen(false);
     setActivatedSuccess(false);
     setActivationResult(null);
     setCheckResult(null);
@@ -190,8 +202,8 @@ export function Warranty() {
     setIsActivating(true);
     try {
       const result = await activateWarranty({
-        sokhung,
-        somay,
+        vin_no: sokhung,
+        engine_no: somay,
         dealer_id: dealerId,
         dealer_name: dealerName,
         customer_name: customerName,
@@ -708,6 +720,50 @@ export function Warranty() {
             <div className="w-10 h-10 rounded-full border-4 border-[#4B0076]/20 border-t-[#4B0076] animate-spin"></div>
             <p className="text-zinc-600 text-[13px] font-medium">{t('checking')}</p>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={notFoundModalOpen} onOpenChange={clearQueryAndState}>
+        <DialogContent className="w-[calc(100%-2rem)] sm:w-full max-w-[420px] bg-white/95 backdrop-blur-[2px] border border-white rounded-[28px] p-6 sm:p-8 shadow-[0_48px_100px_rgba(75,0,118,0.2)] text-center outline-none">
+          <div className="w-16 h-16 shrink-0 rounded-full bg-red-100 text-red-600 flex items-center justify-center mx-auto mb-4">
+            <svg viewBox="0 0 24 24" className="w-8 h-8 fill-current">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
+            </svg>
+          </div>
+          <DialogTitle className="text-2xl font-extrabold text-red-600 mb-2">
+            {t('warranty_not_found')}
+          </DialogTitle>
+          <div className="text-zinc-600 text-[14px] mb-6 leading-relaxed">
+            {t('warranty_not_found_msg')}
+          </div>
+          <Button
+            className="w-full bg-zinc-900 text-white rounded-full h-12 hover:bg-zinc-800 shadow-md"
+            onClick={clearQueryAndState}
+          >
+            {t('close')}
+          </Button>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={notDeliveredModalOpen} onOpenChange={clearQueryAndState}>
+        <DialogContent className="w-[calc(100%-2rem)] sm:w-full max-w-[420px] bg-white/95 backdrop-blur-[2px] border border-white rounded-[28px] p-6 sm:p-8 shadow-[0_48px_100px_rgba(75,0,118,0.2)] text-center outline-none">
+          <div className="w-16 h-16 shrink-0 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center mx-auto mb-4">
+            <svg viewBox="0 0 24 24" className="w-8 h-8 fill-current">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
+            </svg>
+          </div>
+          <DialogTitle className="text-2xl font-extrabold text-orange-600 mb-2">
+            {t('not_delivered')}
+          </DialogTitle>
+          <div className="text-zinc-600 text-[14px] mb-6 leading-relaxed">
+            {t('not_delivered_msg')}
+          </div>
+          <Button
+            className="w-full bg-zinc-900 text-white rounded-full h-12 hover:bg-zinc-800 shadow-md"
+            onClick={clearQueryAndState}
+          >
+            {t('close')}
+          </Button>
         </DialogContent>
       </Dialog>
 

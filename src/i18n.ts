@@ -22,11 +22,14 @@ const en = {
     checking: 'Checking vehicle information...',
     already_activated: 'Already activated',
     already_activated_msg:
-      'The vehicle with chassis number <1>{{sokhung}}</1> was previously activated on <2>{{date}}</2>.',
+      'The vehicle with chassis number <1>{{vin_no}}</1> was previously activated on <2>{{date}}</2>.',
     close: 'Close',
     warranty_not_found: 'Vehicle information not found.',
     warranty_not_found_msg:
       'Please verify the chassis number and engine number, or contact K Lotus support.',
+    not_delivered: 'Not Ready for Activation',
+    not_delivered_msg:
+      'Sorry, this vehicle is not yet ready for warranty activation. Please contact your dealer for assistance.',
     warranty_lookup_error: 'Unable to check warranty information. Please try again.',
     warranty_activation_error: 'Warranty activation failed. Please try again.',
     company_name: 'K LOTUS PRODUCTION TRADING AND SERVICES COMPANY LIMITED',
@@ -65,11 +68,14 @@ const vi = {
     checking: 'Đang kiểm tra thông tin xe...',
     already_activated: 'Đã được kích hoạt',
     already_activated_msg:
-      'Xe có số khung <1>{{sokhung}}</1> đã được kích hoạt bảo hành trước đó vào lúc <2>{{date}}</2>.',
+      'Xe có số khung <1>{{vin_no}}</1> đã được kích hoạt bảo hành trước đó vào lúc <2>{{date}}</2>.',
     close: 'Đóng',
     warranty_not_found: 'Không tìm thấy thông tin xe.',
     warranty_not_found_msg:
       'Vui lòng kiểm tra lại số khung và số máy hoặc liên hệ bộ phận hỗ trợ K Lotus.',
+    not_delivered: 'Chưa sẵn sàng kích hoạt',
+    not_delivered_msg:
+      'Rất tiếc, phương tiện chưa sẵn sàng kích hoạt bảo hành. Vui lòng liên hệ đại lý để được hỗ trợ.',
     warranty_lookup_error: 'Không thể kiểm tra thông tin bảo hành. Vui lòng thử lại.',
     warranty_activation_error: 'Kích hoạt bảo hành thất bại. Vui lòng thử lại.',
     company_name: 'CÔNG TY TNHH SẢN XUẤT THƯƠNG MẠI VÀ DỊCH VỤ K LOTUS',
