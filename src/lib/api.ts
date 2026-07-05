@@ -41,6 +41,10 @@ export type WarrantyCheckResponse = {
     activated_at: string;
     warranty_start_date: string;
     warranty_end_date: string;
+    customer_name?: string | null;
+    customer_phone?: string | null;
+    customer_address?: string | null;
+    dealer_name?: string | null;
   } | null;
 };
 

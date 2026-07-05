@@ -1,12 +1,24 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { useTranslation } from 'react-i18next';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { Copy } from 'lucide-react';
+import { Copy, CalendarIcon, ChevronDownIcon, CheckIcon } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command';
+import { Calendar } from '@/components/ui/calendar';
+import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
 import {
   activateWarranty,
   checkWarranty,
@@ -83,10 +95,12 @@ export function Warranty() {
   const [inputSomay, setInputSomay] = useState('');
 
   const [dealerId, setDealerId] = useState('');
+  const [dealerComboboxOpen, setDealerComboboxOpen] = useState(false);
+  const [dobPopoverOpen, setDobPopoverOpen] = useState(false);
   const [customerName, setCustomerName] = useState('');
   const [customerAddress, setCustomerAddress] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
-  const [customerDob, setCustomerDob] = useState('');
+  const [customerDob, setCustomerDob] = useState<Date>();
   const [customerEmail, setCustomerEmail] = useState('');
 
   useEffect(() => {
@@ -183,7 +197,7 @@ export function Warranty() {
         customer_name: customerName,
         customer_address: customerAddress,
         customer_phone: customerPhone,
-        customer_dob: customerDob || undefined,
+        customer_dob: customerDob ? format(customerDob, 'yyyy-MM-dd') : undefined,
         customer_email: customerEmail || undefined,
       });
       setActivationResult(result);
@@ -210,7 +224,7 @@ export function Warranty() {
         </p>
 
         {hasQrParams ? (
-          <div className="relative z-10 w-full max-w-xl rounded-3xl bg-white/10 backdrop-blur-md border border-white/20 p-6 text-left">
+          <div className="relative z-10 w-full max-w-xl rounded-3xl bg-white/5 backdrop-blur-[2px] border border-white/10 p-6 text-left">
             <div className="space-y-3">
               <div
                 className="cursor-pointer group hover:bg-white/10 p-3 rounded-2xl transition-all flex items-center justify-between gap-4"
@@ -345,7 +359,7 @@ export function Warranty() {
       </section>
 
       <Dialog open={confirmModalOpen} onOpenChange={setConfirmModalOpen}>
-        <DialogContent className="w-[calc(100%-2rem)] sm:w-full max-w-[500px] bg-white/95 backdrop-blur-3xl border border-white rounded-[28px] p-8 shadow-[0_48px_100px_rgba(75,0,118,0.2)] max-h-[90vh] overflow-y-auto">
+        <DialogContent className="w-[calc(100%-2rem)] sm:w-full max-w-[500px] bg-white/95 backdrop-blur-[2px] border border-white rounded-[28px] p-6 sm:p-8 shadow-[0_48px_100px_rgba(75,0,118,0.2)] max-h-[90vh] overflow-y-auto">
           <DialogTitle className="text-2xl font-extrabold text-[#4B0076] mb-2 text-center">
             Thông tin kích hoạt
           </DialogTitle>
@@ -353,43 +367,79 @@ export function Warranty() {
             Vui lòng điền thông tin để hoàn tất quá trình kích hoạt bảo hành.
           </div>
           <form onSubmit={handleConfirmActivate} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-4">
               <div className="space-y-2">
-                <Label className="text-zinc-700 font-semibold text-xs uppercase tracking-wide">
-                  Số khung
+                <Label htmlFor="sokhung" className="text-zinc-700 font-semibold text-sm">
+                  SỐ KHUNG
                 </Label>
-                <div className="h-10 px-3 bg-zinc-100 rounded-lg flex items-center text-sm font-bold text-zinc-900 border border-zinc-200">
-                  {sokhung}
+                <div className="flex items-center min-h-[44px] h-auto py-2.5 px-4 bg-zinc-50 border border-zinc-200 rounded-xl text-zinc-900 font-semibold text-sm break-all leading-tight">
+                  {inputSokhung || 'Chưa có thông tin'}
                 </div>
               </div>
+
               <div className="space-y-2">
-                <Label className="text-zinc-700 font-semibold text-xs uppercase tracking-wide">
-                  Số máy
+                <Label htmlFor="somay" className="text-zinc-700 font-semibold text-sm">
+                  SỐ MÁY
                 </Label>
-                <div className="h-10 px-3 bg-zinc-100 rounded-lg flex items-center text-sm font-bold text-zinc-900 border border-zinc-200">
-                  {somay}
+                <div className="flex items-center min-h-[44px] h-auto py-2.5 px-4 bg-zinc-50 border border-zinc-200 rounded-xl text-zinc-900 font-semibold text-sm break-all leading-tight">
+                  {inputSomay || 'Chưa có thông tin'}
                 </div>
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="dealer" className="text-zinc-700 font-semibold text-sm">
+              <Label htmlFor="dealer" className="text-zinc-700 font-semibold text-sm mb-0.5">
                 Đại lý kích hoạt <span className="text-red-500">*</span>
               </Label>
-              <select
-                id="dealer"
-                required
-                value={dealerId}
-                onChange={(e) => setDealerId(e.target.value)}
-                className="w-full h-11 px-4 border border-zinc-300 rounded-xl focus:border-[#4B0076] focus:ring-1 focus:ring-[#4B0076] text-sm bg-white"
-              >
-                <option value="">-- Chọn đại lý --</option>
-                {DEALERS.map((d) => (
-                  <option key={d.id} value={d.id}>
-                    {d.id} - {d.name}
-                  </option>
-                ))}
-              </select>
+              <Popover open={dealerComboboxOpen} onOpenChange={setDealerComboboxOpen}>
+                <PopoverTrigger
+                  id="dealer"
+                  role="combobox"
+                  aria-expanded={dealerComboboxOpen}
+                  className={cn(
+                    buttonVariants({ variant: 'outline' }),
+                    'w-full h-11 px-4 border-zinc-300 rounded-xl justify-between font-normal text-sm focus:ring-[#4B0076] bg-white hover:bg-white/90'
+                  )}
+                >
+                  {dealerId
+                    ? DEALERS.find((d) => d.id === dealerId)?.id +
+                      ' - ' +
+                      DEALERS.find((d) => d.id === dealerId)?.name
+                    : '-- Chọn đại lý --'}
+                  <ChevronDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </PopoverTrigger>
+                <PopoverContent
+                  className="w-[var(--radix-popover-trigger-width)] p-0 z-[100]"
+                  align="start"
+                >
+                  <Command>
+                    <CommandInput placeholder="Tìm kiếm đại lý..." className="h-10 text-sm" />
+                    <CommandList>
+                      <CommandEmpty>Không tìm thấy đại lý.</CommandEmpty>
+                      <CommandGroup>
+                        {DEALERS.map((d) => (
+                          <CommandItem
+                            key={d.id}
+                            value={`${d.id} ${d.name}`}
+                            onSelect={() => {
+                              setDealerId(d.id === dealerId ? '' : d.id);
+                              setDealerComboboxOpen(false);
+                            }}
+                          >
+                            <CheckIcon
+                              className={cn(
+                                'mr-2 h-4 w-4',
+                                dealerId === d.id ? 'opacity-100' : 'opacity-0'
+                              )}
+                            />
+                            {d.id} - {d.name}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
             </div>
 
             <div className="space-y-2">
@@ -435,18 +485,41 @@ export function Warranty() {
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="custDob" className="text-zinc-700 font-semibold text-sm">
+            <div className="space-y-4">
+              <div className="space-y-2 flex flex-col">
+                <Label htmlFor="custDob" className="text-zinc-700 font-semibold text-sm mb-0.5">
                   Ngày sinh
                 </Label>
-                <Input
-                  id="custDob"
-                  type="date"
-                  value={customerDob}
-                  onChange={(e) => setCustomerDob(e.target.value)}
-                  className="h-11 px-4 border-zinc-300 rounded-xl focus:border-[#4B0076] focus:ring-1 focus:ring-[#4B0076]"
-                />
+                <Popover open={dobPopoverOpen} onOpenChange={setDobPopoverOpen}>
+                  <PopoverTrigger
+                    id="custDob"
+                    className={cn(
+                      buttonVariants({ variant: 'outline' }),
+                      'w-full h-11 px-4 border-zinc-300 rounded-xl justify-start text-left font-normal focus:ring-[#4B0076] hover:bg-transparent cursor-pointer bg-white',
+                      !customerDob && 'text-muted-foreground'
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {customerDob ? format(customerDob, 'dd/MM/yyyy') : <span>dd/mm/yyyy</span>}
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0 z-[100]" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={customerDob}
+                      onSelect={(date) => {
+                        setCustomerDob(date);
+                        if (date) {
+                          setDobPopoverOpen(false);
+                        }
+                      }}
+                      disabled={(date) => date > new Date() || date < new Date('1900-01-01')}
+                      initialFocus
+                      captionLayout="dropdown"
+                      startMonth={new Date(1900, 0)}
+                      endMonth={new Date()}
+                    />
+                  </PopoverContent>
+                </Popover>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="custEmail" className="text-zinc-700 font-semibold text-sm">
@@ -486,7 +559,7 @@ export function Warranty() {
       </Dialog>
 
       <Dialog open={activatedSuccess} onOpenChange={clearQueryAndState}>
-        <DialogContent className="w-[calc(100%-2rem)] sm:w-full max-w-[420px] bg-white/95 backdrop-blur-3xl border border-white rounded-[28px] p-8 shadow-[0_48px_100px_rgba(75,0,118,0.2)] text-center">
+        <DialogContent className="w-[calc(100%-2rem)] sm:w-full max-w-[420px] bg-white/95 backdrop-blur-[2px] border border-white rounded-[28px] p-6 sm:p-8 shadow-[0_48px_100px_rgba(75,0,118,0.2)] text-center max-h-[90vh] overflow-y-auto">
           <div className="w-16 h-16 rounded-full bg-green-100 text-green-600 flex items-center justify-center mx-auto mb-4">
             <svg viewBox="0 0 24 24" className="w-8 h-8 fill-current">
               <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
@@ -566,6 +639,56 @@ export function Warranty() {
                     </strong>
                   </span>
                 </li>
+                {activationResult.activation.dealer_name ? (
+                  <li className="flex items-start gap-2 p-1.5 border-t border-zinc-200/50 mt-1 pt-2">
+                    <span className="text-[#4B0076] font-bold">•</span>
+                    <span>
+                      Đại lý:{' '}
+                      <strong className="font-bold text-zinc-900">
+                        {activationResult.activation.dealer_name}
+                      </strong>
+                    </span>
+                  </li>
+                ) : null}
+                {activationResult.activation.customer_name ? (
+                  <li
+                    className={cn(
+                      'flex items-start gap-2 p-1.5',
+                      !activationResult.activation.dealer_name &&
+                        'border-t border-zinc-200/50 mt-1 pt-2'
+                    )}
+                  >
+                    <span className="text-[#4B0076] font-bold">•</span>
+                    <span>
+                      Khách hàng:{' '}
+                      <strong className="font-bold text-zinc-900">
+                        {activationResult.activation.customer_name}
+                      </strong>
+                    </span>
+                  </li>
+                ) : null}
+                {activationResult.activation.customer_phone ? (
+                  <li className="flex items-start gap-2 p-1.5">
+                    <span className="text-[#4B0076] font-bold">•</span>
+                    <span>
+                      SĐT:{' '}
+                      <strong className="font-bold text-zinc-900">
+                        {activationResult.activation.customer_phone}
+                      </strong>
+                    </span>
+                  </li>
+                ) : null}
+                {activationResult.activation.customer_address ? (
+                  <li className="flex items-start gap-2 p-1.5">
+                    <span className="text-[#4B0076] font-bold">•</span>
+                    <span>
+                      Địa chỉ:{' '}
+                      <strong className="font-bold text-zinc-900">
+                        {activationResult.activation.customer_address}
+                      </strong>
+                    </span>
+                  </li>
+                ) : null}
               </ul>
             </div>
           ) : null}
@@ -579,7 +702,7 @@ export function Warranty() {
       </Dialog>
 
       <Dialog open={isChecking} onOpenChange={() => {}}>
-        <DialogContent className="w-[calc(100%-2rem)] sm:w-full max-w-[300px] bg-white/95 backdrop-blur-3xl border border-white rounded-[24px] p-6 shadow-[0_48px_100px_rgba(75,0,118,0.2)] text-center [&>button]:hidden outline-none">
+        <DialogContent className="w-[calc(100%-2rem)] sm:w-full max-w-[300px] bg-white/95 backdrop-blur-[2px] border border-white rounded-[24px] p-6 shadow-[0_48px_100px_rgba(75,0,118,0.2)] text-center [&>button]:hidden outline-none">
           <DialogTitle className="sr-only">{t('checking')}</DialogTitle>
           <div className="flex flex-col items-center justify-center space-y-4">
             <div className="w-10 h-10 rounded-full border-4 border-[#4B0076]/20 border-t-[#4B0076] animate-spin"></div>
@@ -589,8 +712,8 @@ export function Warranty() {
       </Dialog>
 
       <Dialog open={alreadyActivatedModalOpen} onOpenChange={clearQueryAndState}>
-        <DialogContent className="w-[calc(100%-2rem)] sm:w-full max-w-[420px] bg-white/95 backdrop-blur-3xl border border-white rounded-[28px] p-8 shadow-[0_48px_100px_rgba(75,0,118,0.2)] text-center">
-          <div className="w-16 h-16 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mx-auto mb-4">
+        <DialogContent className="w-[calc(100%-2rem)] sm:w-full max-w-[420px] bg-white/95 backdrop-blur-[2px] border border-white rounded-[28px] p-6 sm:p-8 shadow-[0_48px_100px_rgba(75,0,118,0.2)] text-center max-h-[90vh] overflow-y-auto">
+          <div className="w-16 h-16 shrink-0 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mx-auto mb-4">
             <svg viewBox="0 0 24 24" className="w-8 h-8 fill-current">
               <path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" />
             </svg>
@@ -671,6 +794,56 @@ export function Warranty() {
                     </strong>
                   </span>
                 </li>
+                {checkResult.active_warranty.dealer_name ? (
+                  <li className="flex items-start gap-2 p-1.5 border-t border-zinc-200/50 mt-1 pt-2">
+                    <span className="text-[#4B0076] font-bold">•</span>
+                    <span>
+                      Đại lý:{' '}
+                      <strong className="font-bold text-zinc-900">
+                        {checkResult.active_warranty.dealer_name}
+                      </strong>
+                    </span>
+                  </li>
+                ) : null}
+                {checkResult.active_warranty.customer_name ? (
+                  <li
+                    className={cn(
+                      'flex items-start gap-2 p-1.5',
+                      !checkResult.active_warranty.dealer_name &&
+                        'border-t border-zinc-200/50 mt-1 pt-2'
+                    )}
+                  >
+                    <span className="text-[#4B0076] font-bold">•</span>
+                    <span>
+                      Khách hàng:{' '}
+                      <strong className="font-bold text-zinc-900">
+                        {checkResult.active_warranty.customer_name}
+                      </strong>
+                    </span>
+                  </li>
+                ) : null}
+                {checkResult.active_warranty.customer_phone ? (
+                  <li className="flex items-start gap-2 p-1.5">
+                    <span className="text-[#4B0076] font-bold">•</span>
+                    <span>
+                      SĐT:{' '}
+                      <strong className="font-bold text-zinc-900">
+                        {checkResult.active_warranty.customer_phone}
+                      </strong>
+                    </span>
+                  </li>
+                ) : null}
+                {checkResult.active_warranty.customer_address ? (
+                  <li className="flex items-start gap-2 p-1.5">
+                    <span className="text-[#4B0076] font-bold">•</span>
+                    <span>
+                      Địa chỉ:{' '}
+                      <strong className="font-bold text-zinc-900">
+                        {checkResult.active_warranty.customer_address}
+                      </strong>
+                    </span>
+                  </li>
+                ) : null}
               </ul>
             </div>
           ) : null}
