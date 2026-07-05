@@ -712,7 +712,7 @@ export function Warranty() {
       </Dialog>
 
       <Dialog open={alreadyActivatedModalOpen} onOpenChange={clearQueryAndState}>
-        <DialogContent className="w-[calc(100%-2rem)] sm:w-full max-w-[420px] bg-white/95 backdrop-blur-[2px] border border-white rounded-[28px] p-6 sm:p-8 shadow-[0_48px_100px_rgba(75,0,118,0.2)] text-center max-h-[90vh] overflow-y-auto">
+        <DialogContent className="w-[calc(100%-2rem)] sm:w-full max-w-[420px] sm:max-w-[500px] bg-white/95 backdrop-blur-[2px] border border-white rounded-[28px] p-6 sm:p-8 shadow-[0_48px_100px_rgba(75,0,118,0.2)] text-center max-h-[90vh] overflow-y-auto">
           <div className="w-16 h-16 shrink-0 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mx-auto mb-4">
             <svg viewBox="0 0 24 24" className="w-8 h-8 fill-current">
               <path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" />
@@ -721,11 +721,6 @@ export function Warranty() {
           <DialogTitle className="text-2xl font-extrabold text-[#4B0076] mb-2">
             {t('already_activated')}
           </DialogTitle>
-          <div className="text-zinc-600 text-[14px] mb-4 leading-relaxed">
-            Xe có số khung <strong className="font-bold text-[#4B0076] break-all">{sokhung}</strong>{' '}
-            và số máy <strong className="font-bold text-[#4B0076] break-all">{somay}</strong> đã
-            được kích hoạt bảo hành trước đó.
-          </div>
           {checkResult?.active_warranty ? (
             <div className="rounded-2xl bg-zinc-50 border border-zinc-150 p-5 text-left text-sm text-zinc-700 mb-6 space-y-3 shadow-inner">
               <div className="font-semibold text-zinc-950 border-b border-zinc-200/60 pb-2">
