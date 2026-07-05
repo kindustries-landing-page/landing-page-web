@@ -3,8 +3,15 @@ import { Product } from '@/src/types';
 import { toast } from 'sonner';
 import i18n from '@/src/i18n';
 
+const envBaseUrl = import.meta.env.VITE_API_BASE_URL?.trim();
+const baseURL = envBaseUrl
+  ? envBaseUrl.endsWith('/api/v1')
+    ? envBaseUrl
+    : `${envBaseUrl.replace(/\/$/, '')}/api/v1`
+  : 'http://localhost:10000/api/v1';
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL?.trim() || 'http://localhost:10000/api/v1',
+  baseURL,
   timeout: 15000,
 });
 
