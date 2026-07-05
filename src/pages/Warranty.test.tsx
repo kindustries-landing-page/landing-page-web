@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -44,7 +44,7 @@ describe('Warranty page', () => {
       </MemoryRouter>
     );
 
-    expect(await screen.findByText('Xác nhận kích hoạt')).toBeInTheDocument();
+    expect(await screen.findByText('Thông tin kích hoạt')).toBeInTheDocument();
   });
 
   it('shows already activated modal when active warranty exists', async () => {
@@ -117,13 +117,39 @@ describe('Warranty page', () => {
     );
 
     const confirmButton = await screen.findByRole('button', { name: 'Xác nhận' });
-    await user.click(confirmButton);
+
+    // Fill required fields
+    const nameInput = screen.getByLabelText(/Họ và Tên khách hàng/i);
+    const phoneInput = screen.getByLabelText(/Số điện thoại/i);
+    const addrInput = screen.getByLabelText(/Địa chỉ/i);
+
+    await user.type(nameInput, 'Nguyen Van A');
+    await user.type(phoneInput, '0987654321');
+    await user.type(addrInput, 'Hanoi');
+
+    const dealerTrigger = screen.getByRole('combobox', { name: /Đại lý kích hoạt/i });
+    await user.click(dealerTrigger);
+
+    const dealerOption = await screen.findByRole('option', { name: /Đại lý Khánh Huyền/i });
+    await user.click(dealerOption);
+
+    fireEvent.submit(confirmButton.closest('form')!);
+
+    await waitFor(() => {
+      expect(mockActivateWarranty).toHaveBeenCalledWith({
+        sokhung: 'FRAME001',
+        somay: 'ENGINE001',
+        customer_name: 'Nguyen Van A',
+        customer_phone: '0987654321',
+        customer_address: 'Hanoi',
+        dealer_id: 'KL0001',
+        dealer_name: 'Đại lý Khánh Huyền',
+        customer_dob: undefined,
+        customer_email: undefined,
+      });
+    });
 
     expect(await screen.findByText('Kích hoạt thành công!')).toBeInTheDocument();
-    expect(mockActivateWarranty).toHaveBeenCalledWith({
-      sokhung: 'FRAME001',
-      somay: 'ENGINE001',
-    });
   });
 
   it('opens confirm modal when vehicle is not found in DB yet', async () => {
@@ -139,7 +165,7 @@ describe('Warranty page', () => {
       </MemoryRouter>
     );
 
-    expect(await screen.findByText('Xác nhận kích hoạt')).toBeInTheDocument();
+    expect(await screen.findByText('Thông tin kích hoạt')).toBeInTheDocument();
   });
 
   it('triggers check when user submits form manually', async () => {
@@ -170,7 +196,7 @@ describe('Warranty page', () => {
     await user.type(somayInput, 'ENGINE_MANUAL');
     await user.click(checkButton);
 
-    expect(await screen.findByText('Xác nhận kích hoạt')).toBeInTheDocument();
+    expect(await screen.findByText('Thông tin kích hoạt')).toBeInTheDocument();
   });
 
   it('parses malformed query when somay is concatenated without ampersand', async () => {
@@ -192,7 +218,7 @@ describe('Warranty page', () => {
       </MemoryRouter>
     );
 
-    expect(await screen.findByText('Xác nhận kích hoạt')).toBeInTheDocument();
+    expect(await screen.findByText('Thông tin kích hoạt')).toBeInTheDocument();
     await waitFor(() => {
       expect(mockCheckWarranty).toHaveBeenCalledWith('FRAME001', 'ENGINE001');
     });
