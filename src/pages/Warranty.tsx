@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useSearchParams } from 'react-router';
+import { useSearchParams, useNavigate } from 'react-router';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { useTranslation } from 'react-i18next';
@@ -80,6 +80,7 @@ const DEALERS = [
 
 export function Warranty() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const { sokhung, somay } = useMemo(() => getWarrantyQueryParams(searchParams), [searchParams]);
 
@@ -225,66 +226,73 @@ export function Warranty() {
 
   return (
     <div className="w-full relative">
-      <section className="pt-32 pb-16 px-6 md:px-12 bg-gradient-to-br from-[#4B0076] via-[#9366D9] to-[#9333ea] text-white text-center relative overflow-hidden flex flex-col items-center">
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg_width=%2260%22_height=%2260%22_viewBox=%220_0_60_60%22_xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cg_fill=%22%23ffffff%22_fill-opacity=%220.04%22%3E%3Ccircle_cx=%2230%22_cy=%2230%22_r=%2220%22/%3E%3C/g%3E%3C/svg%3E')] opacity-50" />
+      <div className="w-full max-w-5xl mx-auto px-6 md:px-12 py-8 flex justify-start">
+        <Button
+          variant="ghost"
+          className="hover:bg-transparent text-[#4B0076] font-bold px-4 py-2 h-auto cursor-pointer flex items-center rounded-xl"
+          onClick={() => navigate('/')}
+        >
+          <svg viewBox="0 0 24 24" className="w-5 h-5 mr-2 fill-current">
+            <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" />
+          </svg>
+          Về Trang Chủ
+        </Button>
+      </div>
 
-        <h1 className="text-4xl md:text-5xl font-black tracking-tight mb-4 relative z-10">
-          {t('warranty_policy')}
-        </h1>
-        <p className="text-base text-white/80 max-w-lg mx-auto mb-8 relative z-10">
-          {t('warranty_subtitle')}
-        </p>
-
-        {hasQrParams ? (
-          <div className="relative z-10 w-full max-w-xl rounded-3xl bg-white/5 backdrop-blur-[2px] border border-white/10 p-6 text-left">
-            <div className="space-y-3">
-              <div
-                className="cursor-pointer group hover:bg-white/10 p-3 rounded-2xl transition-all flex items-center justify-between gap-4"
-                onClick={() => handleCopyToClipboard(sokhung, 'số khung')}
-                title="Click để sao chép"
-              >
-                <div className="flex items-center gap-2 min-w-0">
-                  <span className="text-[11px] font-bold tracking-widest uppercase text-white/70 whitespace-nowrap">
-                    {t('chassis_number')}:
-                  </span>
-                  <span className="text-base font-bold break-all">{sokhung}</span>
-                </div>
-                <Copy className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
-              </div>
-              <div
-                className="cursor-pointer group hover:bg-white/10 p-3 rounded-2xl transition-all flex items-center justify-between gap-4"
-                onClick={() => handleCopyToClipboard(somay, 'số máy')}
-                title="Click để sao chép"
-              >
-                <div className="flex items-center gap-2 min-w-0">
-                  <span className="text-[11px] font-bold tracking-widest uppercase text-white/70 whitespace-nowrap">
-                    {t('engine_number')}:
-                  </span>
-                  <span className="text-base font-bold break-all">{somay}</span>
-                </div>
-                <Copy className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
-              </div>
-            </div>
-
-            {checkResult?.vehicle ? (
-              <div className="mt-4 pt-4 border-t border-white/20 text-sm text-white/90 space-y-1">
-                <div>
-                  Model: {checkResult.vehicle.model_name || checkResult.vehicle.model_code || 'N/A'}
-                </div>
-                <div>Trạng thái: {checkResult.vehicle.warranty_status}</div>
-                {checkResult.active_warranty ? (
-                  <div>
-                    Hiệu lực đến: {formatDate(checkResult.active_warranty.warranty_end_date)}
+      <section className="py-6 md:py-10 px-6 md:px-12 bg-white flex flex-col items-center">
+        <div className="max-w-4xl w-full text-center space-y-8 md:space-y-10">
+          {hasQrParams ? (
+            <div className="w-full max-w-xl rounded-xl bg-purple-50/50 border border-purple-100 p-6 text-left mx-auto shadow-sm">
+              <div className="space-y-3">
+                <div
+                  className="cursor-pointer group hover:bg-white p-3 rounded-2xl transition-all flex items-center justify-between gap-4 border border-transparent hover:border-purple-100 hover:shadow-sm"
+                  onClick={() => handleCopyToClipboard(sokhung, 'số khung')}
+                  title="Click để sao chép"
+                >
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="text-[11px] font-bold tracking-widest uppercase text-purple-900/60 whitespace-nowrap">
+                      {t('chassis_number')}:
+                    </span>
+                    <span className="text-base font-bold text-zinc-900 break-all">{sokhung}</span>
                   </div>
-                ) : null}
+                  <Copy className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 text-[#4B0076]" />
+                </div>
+                <div
+                  className="cursor-pointer group hover:bg-white p-3 rounded-2xl transition-all flex items-center justify-between gap-4 border border-transparent hover:border-purple-100 hover:shadow-sm"
+                  onClick={() => handleCopyToClipboard(somay, 'số máy')}
+                  title="Click để sao chép"
+                >
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="text-[11px] font-bold tracking-widest uppercase text-purple-900/60 whitespace-nowrap">
+                      {t('engine_number')}:
+                    </span>
+                    <span className="text-base font-bold text-zinc-900 break-all">{somay}</span>
+                  </div>
+                  <Copy className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 text-[#4B0076]" />
+                </div>
               </div>
-            ) : null}
-          </div>
-        ) : null}
-      </section>
 
-      <section className="py-20 px-6 md:px-12 bg-white flex flex-col items-center">
-        <div className="max-w-4xl w-full text-center space-y-10">
+              {checkResult?.vehicle ? (
+                <div className="mt-4 pt-4 border-t border-purple-200/50 text-sm text-zinc-700 space-y-1 px-3">
+                  <div>
+                    <span className="font-semibold text-zinc-900">Model:</span>{' '}
+                    {checkResult.vehicle.model_name || checkResult.vehicle.model_code || 'N/A'}
+                  </div>
+                  <div>
+                    <span className="font-semibold text-zinc-900">Trạng thái:</span>{' '}
+                    {checkResult.vehicle.warranty_status}
+                  </div>
+                  {checkResult.active_warranty ? (
+                    <div>
+                      <span className="font-semibold text-zinc-900">Hiệu lực đến:</span>{' '}
+                      {formatDate(checkResult.active_warranty.warranty_end_date)}
+                    </div>
+                  ) : null}
+                </div>
+              ) : null}
+            </div>
+          ) : null}
+
           <div className="space-y-4">
             <h2 className="text-3xl md:text-4xl font-black text-[#4B0076] tracking-tight">
               Tra cứu & Kích hoạt bảo hành
@@ -297,7 +305,7 @@ export function Warranty() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-left items-stretch">
             {/* Phương thức 1: Quét mã */}
-            <div className="rounded-3xl border border-zinc-150 p-8 bg-zinc-50/50 hover:bg-zinc-50 transition-all duration-300 flex flex-col justify-between shadow-sm">
+            <div className="rounded-xl border border-zinc-150 p-8 bg-zinc-50/50 hover:bg-zinc-50 transition-all duration-300 flex flex-col justify-between shadow-sm">
               <div className="space-y-4">
                 <div className="w-12 h-12 rounded-2xl bg-[#4B0076]/10 text-[#4B0076] flex items-center justify-center text-2xl font-bold">
                   📱
@@ -317,7 +325,7 @@ export function Warranty() {
             </div>
 
             {/* Phương thức 2: Nhập thông tin */}
-            <div className="rounded-3xl border border-zinc-200 p-8 bg-white shadow-lg flex flex-col justify-between">
+            <div className="rounded-xl border border-zinc-200 p-8 bg-white shadow-lg flex flex-col justify-between">
               <div className="space-y-6">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-2xl bg-[#9366D9]/10 text-[#9366D9] flex items-center justify-center text-2xl font-bold">
@@ -371,7 +379,7 @@ export function Warranty() {
       </section>
 
       <Dialog open={confirmModalOpen} onOpenChange={setConfirmModalOpen}>
-        <DialogContent className="w-[calc(100%-2rem)] sm:w-full max-w-[500px] bg-white/95 backdrop-blur-[2px] border border-white rounded-[28px] p-6 sm:p-8 shadow-[0_48px_100px_rgba(75,0,118,0.2)] max-h-[90vh] overflow-y-auto">
+        <DialogContent className="w-[calc(100%-2rem)] sm:w-full max-w-[500px] bg-white/95 backdrop-blur-[2px] border border-white rounded-xl p-6 sm:p-8 shadow-[0_48px_100px_rgba(75,0,118,0.2)] max-h-[90vh] overflow-y-auto">
           <DialogTitle className="text-2xl font-extrabold text-[#4B0076] mb-2 text-center">
             Thông tin kích hoạt
           </DialogTitle>
@@ -571,7 +579,7 @@ export function Warranty() {
       </Dialog>
 
       <Dialog open={activatedSuccess} onOpenChange={clearQueryAndState}>
-        <DialogContent className="w-[calc(100%-2rem)] sm:w-full max-w-[420px] bg-white/95 backdrop-blur-[2px] border border-white rounded-[28px] p-6 sm:p-8 shadow-[0_48px_100px_rgba(75,0,118,0.2)] text-center max-h-[90vh] overflow-y-auto">
+        <DialogContent className="w-[calc(100%-2rem)] sm:w-full max-w-[420px] bg-white/95 backdrop-blur-[2px] border border-white rounded-xl p-6 sm:p-8 shadow-[0_48px_100px_rgba(75,0,118,0.2)] text-center max-h-[90vh] overflow-y-auto">
           <div className="w-16 h-16 rounded-full bg-green-100 text-green-600 flex items-center justify-center mx-auto mb-4">
             <svg viewBox="0 0 24 24" className="w-8 h-8 fill-current">
               <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
@@ -714,7 +722,7 @@ export function Warranty() {
       </Dialog>
 
       <Dialog open={isChecking} onOpenChange={() => {}}>
-        <DialogContent className="w-[calc(100%-2rem)] sm:w-full max-w-[300px] bg-white/95 backdrop-blur-[2px] border border-white rounded-[24px] p-6 shadow-[0_48px_100px_rgba(75,0,118,0.2)] text-center [&>button]:hidden outline-none">
+        <DialogContent className="w-[calc(100%-2rem)] sm:w-full max-w-[300px] bg-white/95 backdrop-blur-[2px] border border-white rounded-xl p-6 shadow-[0_48px_100px_rgba(75,0,118,0.2)] text-center [&>button]:hidden outline-none">
           <DialogTitle className="sr-only">{t('checking')}</DialogTitle>
           <div className="flex flex-col items-center justify-center space-y-4">
             <div className="w-10 h-10 rounded-full border-4 border-[#4B0076]/20 border-t-[#4B0076] animate-spin"></div>
@@ -724,7 +732,7 @@ export function Warranty() {
       </Dialog>
 
       <Dialog open={notFoundModalOpen} onOpenChange={clearQueryAndState}>
-        <DialogContent className="w-[calc(100%-2rem)] sm:w-full max-w-[420px] bg-white/95 backdrop-blur-[2px] border border-white rounded-[28px] p-6 sm:p-8 shadow-[0_48px_100px_rgba(75,0,118,0.2)] text-center outline-none">
+        <DialogContent className="w-[calc(100%-2rem)] sm:w-full max-w-[420px] bg-white/95 backdrop-blur-[2px] border border-white rounded-xl p-6 sm:p-8 shadow-[0_48px_100px_rgba(75,0,118,0.2)] text-center outline-none">
           <div className="w-16 h-16 shrink-0 rounded-full bg-red-100 text-red-600 flex items-center justify-center mx-auto mb-4">
             <svg viewBox="0 0 24 24" className="w-8 h-8 fill-current">
               <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
@@ -746,7 +754,7 @@ export function Warranty() {
       </Dialog>
 
       <Dialog open={notDeliveredModalOpen} onOpenChange={clearQueryAndState}>
-        <DialogContent className="w-[calc(100%-2rem)] sm:w-full max-w-[420px] bg-white/95 backdrop-blur-[2px] border border-white rounded-[28px] p-6 sm:p-8 shadow-[0_48px_100px_rgba(75,0,118,0.2)] text-center outline-none">
+        <DialogContent className="w-[calc(100%-2rem)] sm:w-full max-w-[420px] bg-white/95 backdrop-blur-[2px] border border-white rounded-xl p-6 sm:p-8 shadow-[0_48px_100px_rgba(75,0,118,0.2)] text-center outline-none">
           <div className="w-16 h-16 shrink-0 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center mx-auto mb-4">
             <svg viewBox="0 0 24 24" className="w-8 h-8 fill-current">
               <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
@@ -768,7 +776,7 @@ export function Warranty() {
       </Dialog>
 
       <Dialog open={alreadyActivatedModalOpen} onOpenChange={clearQueryAndState}>
-        <DialogContent className="w-[calc(100%-2rem)] sm:w-full max-w-[420px] sm:max-w-[500px] bg-white/95 backdrop-blur-[2px] border border-white rounded-[28px] p-6 sm:p-8 shadow-[0_48px_100px_rgba(75,0,118,0.2)] text-center max-h-[90vh] overflow-y-auto">
+        <DialogContent className="w-[calc(100%-2rem)] sm:w-full max-w-[420px] sm:max-w-[500px] bg-white/95 backdrop-blur-[2px] border border-white rounded-xl p-6 sm:p-8 shadow-[0_48px_100px_rgba(75,0,118,0.2)] text-center max-h-[90vh] overflow-y-auto">
           <div className="w-16 h-16 shrink-0 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mx-auto mb-4">
             <svg viewBox="0 0 24 24" className="w-8 h-8 fill-current">
               <path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" />

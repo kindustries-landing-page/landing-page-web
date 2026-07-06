@@ -8,17 +8,8 @@ export function Footer() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12 max-w-7xl mx-auto">
         <div className="md:col-span-2">
           <div className="flex items-center gap-2 mb-4">
-            <div className="w-[30px] h-[30px] rounded-full bg-gradient-to-br from-[#4B0076] to-[#a855f7] flex items-center justify-center">
-              <svg viewBox="0 0 15 15" fill="none" className="w-[15px] h-[15px]">
-                <circle cx="7.5" cy="7.5" r="6" stroke="white" strokeWidth="1.2" opacity=".8" />
-                <path
-                  d="M7.5 2.5v10M2.5 7.5h10"
-                  stroke="white"
-                  strokeWidth="1.6"
-                  strokeLinecap="round"
-                />
-                <circle cx="7.5" cy="7.5" r="1.8" fill="white" />
-              </svg>
+            <div className="w-[30px] h-[30px] rounded-full bg-white flex items-center justify-center p-[5px] shadow-sm">
+              <img src="/favicon.png" alt="K Lotus" className="w-full h-full object-contain" />
             </div>
             <span className="font-extrabold tracking-wide text-base">K LOTUS</span>
           </div>
@@ -56,7 +47,7 @@ export function Footer() {
       </div>
 
       <div className="border-t border-white/10 pt-5 flex flex-col md:flex-row items-center justify-between text-xs opacity-40 max-w-7xl mx-auto">
-        <span>© 2025 {t('company_name')} · MST: 0319289900</span>
+        <span>© 2026 {t('company_name')} · MST: 0319289900</span>
         <span className="mt-2 md:mt-0">{t('designed_by')}</span>
       </div>
     </footer>

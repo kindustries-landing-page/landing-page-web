@@ -63,6 +63,20 @@ export function Home() {
             {t('subtitle')}
           </motion.p>
 
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.65 }}
+            className="flex gap-4 flex-wrap justify-center"
+          >
+            <Button
+              className="bg-gradient-to-br from-[#4B0076] to-[#9366D9] text-white px-8 h-14 rounded-full text-[15px] font-bold shadow-[0_8px_32px_rgba(75,0,118,0.35)] hover:shadow-[0_16px_40px_rgba(75,0,118,0.45)] hover:-translate-y-1 transition-all cursor-pointer"
+              onClick={() => navigate('/bao-hanh')}
+            >
+              Bảo Hành & Tra Cứu
+            </Button>
+          </motion.div>
+
           {/* 
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1, delay: 0.65 }} className="flex gap-3.5 flex-wrap justify-center">
             <Button 
