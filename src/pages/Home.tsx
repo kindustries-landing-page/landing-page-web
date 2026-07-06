@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { getProducts } from '@/src/lib/api';
+// import { useQuery } from '@tanstack/react-query';
+// import { getProducts } from '@/src/lib/api';
 import { ProductSvgs } from '@/src/lib/svgs';
 import { useAppStore } from '@/src/store';
 import { Button } from '@/components/ui/button';
@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next';
 
 export function Home() {
   const { t } = useTranslation();
-  useQuery({ queryKey: ['products'], queryFn: getProducts });
+  // useQuery({ queryKey: ['products'], queryFn: getProducts });
   const setTestDriveOpen = useAppStore((state) => state.setTestDriveOpen);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const navigate = useNavigate();
