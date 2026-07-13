@@ -74,8 +74,9 @@ const formatDate = (value?: string | null) => {
 const DEALERS = [
   { id: 'KL0001', name: 'Đại lý Khánh Huyền' },
   { id: 'KL0002', name: 'Đại lý Trường Hiền' },
-  { id: 'KL0003', name: 'Đại lý Nhật Hải' },
-  { id: 'KL0005', name: 'Đại Lý Huy Hiệp' },
+  { id: 'KL0003', name: 'Hộ kinh doanh Nhật Hải' },
+  { id: 'KL0005', name: 'Hộ kinh doanh Xe đạp điện Huy Hiệp' },
+  { id: 'KL0006', name: 'Đại lý Hạnh Phúc' },
 ];
 
 export function Warranty() {
@@ -105,6 +106,7 @@ export function Warranty() {
   const [customerPhone, setCustomerPhone] = useState('');
   const [customerDob, setCustomerDob] = useState<Date>();
   const [customerEmail, setCustomerEmail] = useState('');
+  const [checkTrigger, setCheckTrigger] = useState(0);
 
   useEffect(() => {
     setInputSokhung(sokhung);
@@ -118,6 +120,7 @@ export function Warranty() {
         sokhung: inputSokhung.trim(),
         somay: inputSomay.trim(),
       });
+      setCheckTrigger((prev) => prev + 1);
     }
   };
 
@@ -163,6 +166,12 @@ export function Warranty() {
           setAlreadyActivatedModalOpen(true);
           toast.info('Phương tiện đã được kích hoạt bảo hành trước đó.');
         } else {
+          setCustomerName('');
+          setCustomerAddress('');
+          setCustomerPhone('');
+          setCustomerDob(undefined);
+          setCustomerEmail('');
+          setDealerId('');
           setConfirmModalOpen(true);
           toast.success('Xác minh thông tin thành công. Sẵn sàng kích hoạt.');
         }
@@ -178,7 +187,7 @@ export function Warranty() {
     return () => {
       cancelled = true;
     };
-  }, [hasQrParams, sokhung, somay, t]);
+  }, [hasQrParams, sokhung, somay, t, checkTrigger]);
 
   const clearQueryAndState = () => {
     setConfirmModalOpen(false);
@@ -188,6 +197,12 @@ export function Warranty() {
     setActivatedSuccess(false);
     setActivationResult(null);
     setCheckResult(null);
+    setCustomerName('');
+    setCustomerAddress('');
+    setCustomerPhone('');
+    setCustomerDob(undefined);
+    setCustomerEmail('');
+    setDealerId('');
     setSearchParams({});
   };
 
@@ -274,7 +289,7 @@ export function Warranty() {
 
               {checkResult?.vehicle ? (
                 <div className="mt-4 pt-4 border-t border-purple-200/50 text-sm text-zinc-700 space-y-1 px-3">
-                  <div>
+                  <div className="hidden">
                     <span className="font-semibold text-zinc-900">Model:</span>{' '}
                     {checkResult.vehicle.model_name || checkResult.vehicle.model_code || 'N/A'}
                   </div>
@@ -379,7 +394,7 @@ export function Warranty() {
       </section>
 
       <Dialog open={confirmModalOpen} onOpenChange={setConfirmModalOpen}>
-        <DialogContent className="w-[calc(100%-2rem)] sm:w-full max-w-[500px] bg-white/95 backdrop-blur-[2px] border border-white rounded-xl p-6 sm:p-8 shadow-[0_48px_100px_rgba(75,0,118,0.2)] max-h-[90vh] overflow-y-auto">
+        <DialogContent className="w-[calc(100%-2rem)] sm:w-full max-w-[600px] bg-white/95 backdrop-blur-[2px] border border-white rounded-xl p-6 sm:p-8 shadow-[0_48px_100px_rgba(75,0,118,0.2)] max-h-[90vh] overflow-y-auto">
           <DialogTitle className="text-2xl font-extrabold text-[#4B0076] mb-2 text-center">
             Thông tin kích hoạt
           </DialogTitle>
@@ -428,13 +443,10 @@ export function Warranty() {
                     : '-- Chọn đại lý --'}
                   <ChevronDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </PopoverTrigger>
-                <PopoverContent
-                  className="w-[var(--radix-popover-trigger-width)] p-0 z-[100]"
-                  align="start"
-                >
+                <PopoverContent className="w-[var(--anchor-width)] p-0 z-[100]" align="start">
                   <Command>
                     <CommandInput placeholder="Tìm kiếm đại lý..." className="h-10 text-sm" />
-                    <CommandList>
+                    <CommandList className="max-h-[160px] overflow-y-auto">
                       <CommandEmpty>Không tìm thấy đại lý.</CommandEmpty>
                       <CommandGroup>
                         {DEALERS.map((d) => (
@@ -448,11 +460,13 @@ export function Warranty() {
                           >
                             <CheckIcon
                               className={cn(
-                                'mr-2 h-4 w-4',
+                                'mr-2 h-4 w-4 shrink-0',
                                 dealerId === d.id ? 'opacity-100' : 'opacity-0'
                               )}
                             />
-                            {d.id} - {d.name}
+                            <span className="truncate">
+                              {d.id} - {d.name}
+                            </span>
                           </CommandItem>
                         ))}
                       </CommandGroup>
