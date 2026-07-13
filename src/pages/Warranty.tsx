@@ -593,7 +593,7 @@ export function Warranty() {
       </Dialog>
 
       <Dialog open={activatedSuccess} onOpenChange={clearQueryAndState}>
-        <DialogContent className="w-[calc(100%-2rem)] sm:w-full max-w-[420px] bg-white/95 backdrop-blur-[2px] border border-white rounded-xl p-6 sm:p-8 shadow-[0_48px_100px_rgba(75,0,118,0.2)] text-center max-h-[90vh] overflow-y-auto">
+        <DialogContent className="w-[calc(100%-2rem)] sm:w-full max-w-[600px] bg-white/95 backdrop-blur-[2px] border border-white rounded-xl p-6 sm:p-8 shadow-[0_48px_100px_rgba(75,0,118,0.2)] text-center max-h-[90vh] overflow-y-auto">
           <div className="w-16 h-16 rounded-full bg-green-100 text-green-600 flex items-center justify-center mx-auto mb-4">
             <svg viewBox="0 0 24 24" className="w-8 h-8 fill-current">
               <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
