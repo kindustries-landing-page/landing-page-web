@@ -78,6 +78,10 @@ export type WarrantyActivateResponse = {
     warranty_start_date: string;
     warranty_end_date: string;
     status: string;
+    dealer_name?: string | null;
+    customer_name?: string | null;
+    customer_phone?: string | null;
+    customer_address?: string | null;
   };
   vehicle: {
     id: string;

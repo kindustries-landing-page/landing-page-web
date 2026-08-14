@@ -1,30 +1,28 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router';
-import { Button, buttonVariants } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { Copy, CalendarIcon, ChevronDownIcon, CheckIcon } from 'lucide-react';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from '@/components/ui/command';
-import { Calendar } from '@/components/ui/calendar';
-import { format } from 'date-fns';
-import { cn } from '@/lib/utils';
+import { Copy } from 'lucide-react';
 import {
   activateWarranty,
   checkWarranty,
   type WarrantyActivateResponse,
   type WarrantyCheckResponse,
 } from '@/src/lib/api';
+import {
+  WarrantyActivationModal,
+  type ActivationFormPayload,
+} from '@/src/components/warranty/WarrantyActivationModal';
+import { WarrantySuccessModal } from '@/src/components/warranty/WarrantySuccessModal';
+import {
+  CheckingModal,
+  NotFoundModal,
+  NotDeliveredModal,
+  AlreadyActivatedModal,
+} from '@/src/components/warranty/WarrantyStatusModals';
 
 const getWarrantyQueryParams = (searchParams: URLSearchParams) => {
   const rawSokhung = searchParams.get('sokhung')?.trim() ?? '';
@@ -51,17 +49,6 @@ const getWarrantyQueryParams = (searchParams: URLSearchParams) => {
   };
 };
 
-const formatDateTime = (value?: string | null) => {
-  if (!value) return '';
-  return new Date(value).toLocaleString('vi-VN', {
-    hour: '2-digit',
-    minute: '2-digit',
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-  });
-};
-
 const formatDate = (value?: string | null) => {
   if (!value) return '';
   return new Date(value).toLocaleDateString('vi-VN', {
@@ -71,20 +58,13 @@ const formatDate = (value?: string | null) => {
   });
 };
 
-const DEALERS = [
-  { id: 'KL0001', name: 'Đại lý Khánh Huyền' },
-  { id: 'KL0002', name: 'Đại lý Trường Hiền' },
-  { id: 'KL0003', name: 'Hộ kinh doanh Nhật Hải' },
-  { id: 'KL0005', name: 'Hộ kinh doanh Xe đạp điện Huy Hiệp' },
-  { id: 'KL0006', name: 'Đại lý Hạnh Phúc' },
-];
-
 export function Warranty() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const { sokhung, somay } = useMemo(() => getWarrantyQueryParams(searchParams), [searchParams]);
 
+  // Modal open states
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [activatedSuccess, setActivatedSuccess] = useState(false);
   const [isChecking, setIsChecking] = useState(false);
@@ -92,20 +72,14 @@ export function Warranty() {
   const [alreadyActivatedModalOpen, setAlreadyActivatedModalOpen] = useState(false);
   const [notFoundModalOpen, setNotFoundModalOpen] = useState(false);
   const [notDeliveredModalOpen, setNotDeliveredModalOpen] = useState(false);
+
+  // API responses
   const [activationResult, setActivationResult] = useState<WarrantyActivateResponse | null>(null);
   const [checkResult, setCheckResult] = useState<WarrantyCheckResponse | null>(null);
 
+  // Manual input fields on page
   const [inputSokhung, setInputSokhung] = useState('');
   const [inputSomay, setInputSomay] = useState('');
-
-  const [dealerId, setDealerId] = useState('');
-  const [dealerComboboxOpen, setDealerComboboxOpen] = useState(false);
-  const [dobPopoverOpen, setDobPopoverOpen] = useState(false);
-  const [customerName, setCustomerName] = useState('');
-  const [customerAddress, setCustomerAddress] = useState('');
-  const [customerPhone, setCustomerPhone] = useState('');
-  const [customerDob, setCustomerDob] = useState<Date>();
-  const [customerEmail, setCustomerEmail] = useState('');
   const [checkTrigger, setCheckTrigger] = useState(0);
 
   useEffect(() => {
@@ -166,12 +140,6 @@ export function Warranty() {
           setAlreadyActivatedModalOpen(true);
           toast.info('Phương tiện đã được kích hoạt bảo hành trước đó.');
         } else {
-          setCustomerName('');
-          setCustomerAddress('');
-          setCustomerPhone('');
-          setCustomerDob(undefined);
-          setCustomerEmail('');
-          setDealerId('');
           setConfirmModalOpen(true);
           toast.success('Xác minh thông tin thành công. Sẵn sàng kích hoạt.');
         }
@@ -197,37 +165,13 @@ export function Warranty() {
     setActivatedSuccess(false);
     setActivationResult(null);
     setCheckResult(null);
-    setCustomerName('');
-    setCustomerAddress('');
-    setCustomerPhone('');
-    setCustomerDob(undefined);
-    setCustomerEmail('');
-    setDealerId('');
     setSearchParams({});
   };
 
-  const handleConfirmActivate = async (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    if (!hasQrParams) return;
-    if (!dealerId || !customerName || !customerAddress || !customerPhone) {
-      toast.error('Vui lòng nhập đầy đủ các trường bắt buộc');
-      return;
-    }
-    const dealerName = DEALERS.find((d) => d.id === dealerId)?.name || '';
-
+  const handleConfirmActivate = async (payload: ActivationFormPayload) => {
     setIsActivating(true);
     try {
-      const result = await activateWarranty({
-        vin_no: sokhung,
-        engine_no: somay,
-        dealer_id: dealerId,
-        dealer_name: dealerName,
-        customer_name: customerName,
-        customer_address: customerAddress,
-        customer_phone: customerPhone,
-        customer_dob: customerDob ? format(customerDob, 'yyyy-MM-dd') : undefined,
-        customer_email: customerEmail || undefined,
-      });
+      const result = await activateWarranty(payload);
       setActivationResult(result);
       setConfirmModalOpen(false);
       setActivatedSuccess(true);
@@ -272,6 +216,7 @@ export function Warranty() {
                   </div>
                   <Copy className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 text-[#4B0076]" />
                 </div>
+
                 <div
                   className="cursor-pointer group hover:bg-white p-3 rounded-2xl transition-all flex items-center justify-between gap-4 border border-transparent hover:border-purple-100 hover:shadow-sm"
                   onClick={() => handleCopyToClipboard(somay, 'số máy')}
@@ -393,541 +338,43 @@ export function Warranty() {
         </div>
       </section>
 
-      <Dialog open={confirmModalOpen} onOpenChange={setConfirmModalOpen}>
-        <DialogContent className="w-[calc(100%-2rem)] sm:w-full max-w-[600px] bg-white/95 backdrop-blur-[2px] border border-white rounded-xl p-6 sm:p-8 shadow-[0_48px_100px_rgba(75,0,118,0.2)] max-h-[90vh] overflow-y-auto">
-          <DialogTitle className="text-2xl font-extrabold text-[#4B0076] mb-2 text-center">
-            Thông tin kích hoạt
-          </DialogTitle>
-          <div className="text-zinc-600 text-[14px] text-center mb-4 leading-relaxed">
-            Vui lòng điền thông tin để hoàn tất quá trình kích hoạt bảo hành.
-          </div>
-          <form onSubmit={handleConfirmActivate} className="space-y-4">
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="sokhung" className="text-zinc-700 font-semibold text-sm">
-                  SỐ KHUNG
-                </Label>
-                <div className="flex items-center min-h-[44px] h-auto py-2.5 px-4 bg-zinc-50 border border-zinc-200 rounded-xl text-zinc-900 font-semibold text-sm break-all leading-tight">
-                  {inputSokhung || 'Chưa có thông tin'}
-                </div>
-              </div>
+      {/* Modal 1: Kích hoạt bảo hành */}
+      <WarrantyActivationModal
+        open={confirmModalOpen}
+        onOpenChange={setConfirmModalOpen}
+        sokhung={sokhung}
+        somay={somay}
+        isActivating={isActivating}
+        onConfirm={handleConfirmActivate}
+        onCancel={clearQueryAndState}
+      />
 
-              <div className="space-y-2">
-                <Label htmlFor="somay" className="text-zinc-700 font-semibold text-sm">
-                  SỐ MÁY
-                </Label>
-                <div className="flex items-center min-h-[44px] h-auto py-2.5 px-4 bg-zinc-50 border border-zinc-200 rounded-xl text-zinc-900 font-semibold text-sm break-all leading-tight">
-                  {inputSomay || 'Chưa có thông tin'}
-                </div>
-              </div>
-            </div>
+      {/* Modal 2: Kích hoạt thành công */}
+      <WarrantySuccessModal
+        open={activatedSuccess}
+        onClose={clearQueryAndState}
+        activationResult={activationResult}
+        sokhung={sokhung}
+        somay={somay}
+      />
 
-            <div className="space-y-2">
-              <Label htmlFor="dealer" className="text-zinc-700 font-semibold text-sm mb-0.5">
-                Đại lý kích hoạt <span className="text-red-500">*</span>
-              </Label>
-              <Popover open={dealerComboboxOpen} onOpenChange={setDealerComboboxOpen}>
-                <PopoverTrigger
-                  id="dealer"
-                  role="combobox"
-                  aria-expanded={dealerComboboxOpen}
-                  className={cn(
-                    buttonVariants({ variant: 'outline' }),
-                    'w-full h-11 px-4 border-zinc-300 rounded-xl justify-between font-normal text-sm focus:ring-[#4B0076] bg-white hover:bg-white/90'
-                  )}
-                >
-                  {dealerId
-                    ? DEALERS.find((d) => d.id === dealerId)?.id +
-                      ' - ' +
-                      DEALERS.find((d) => d.id === dealerId)?.name
-                    : '-- Chọn đại lý --'}
-                  <ChevronDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                </PopoverTrigger>
-                <PopoverContent className="w-[var(--anchor-width)] p-0 z-[100]" align="start">
-                  <Command>
-                    <CommandInput placeholder="Tìm kiếm đại lý..." className="h-10 text-sm" />
-                    <CommandList className="max-h-[160px] overflow-y-auto">
-                      <CommandEmpty>Không tìm thấy đại lý.</CommandEmpty>
-                      <CommandGroup>
-                        {DEALERS.map((d) => (
-                          <CommandItem
-                            key={d.id}
-                            value={`${d.id} ${d.name}`}
-                            onSelect={() => {
-                              setDealerId(d.id === dealerId ? '' : d.id);
-                              setDealerComboboxOpen(false);
-                            }}
-                          >
-                            <CheckIcon
-                              className={cn(
-                                'mr-2 h-4 w-4 shrink-0',
-                                dealerId === d.id ? 'opacity-100' : 'opacity-0'
-                              )}
-                            />
-                            <span className="truncate">
-                              {d.id} - {d.name}
-                            </span>
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
-            </div>
+      {/* Modal 3: Đang kiểm tra */}
+      <CheckingModal open={isChecking} />
 
-            <div className="space-y-2">
-              <Label htmlFor="custName" className="text-zinc-700 font-semibold text-sm">
-                Họ và Tên khách hàng <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                id="custName"
-                required
-                placeholder="Nguyễn Văn A"
-                value={customerName}
-                onChange={(e) => setCustomerName(e.target.value)}
-                className="h-11 px-4 border-zinc-300 rounded-xl focus:border-[#4B0076] focus:ring-1 focus:ring-[#4B0076]"
-              />
-            </div>
+      {/* Modal 4: Không tìm thấy */}
+      <NotFoundModal open={notFoundModalOpen} onClose={clearQueryAndState} />
 
-            <div className="space-y-2">
-              <Label htmlFor="custPhone" className="text-zinc-700 font-semibold text-sm">
-                Số điện thoại <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                id="custPhone"
-                type="tel"
-                required
-                placeholder="0912345678"
-                value={customerPhone}
-                onChange={(e) => setCustomerPhone(e.target.value)}
-                className="h-11 px-4 border-zinc-300 rounded-xl focus:border-[#4B0076] focus:ring-1 focus:ring-[#4B0076]"
-              />
-            </div>
+      {/* Modal 5: Chưa xuất kho */}
+      <NotDeliveredModal open={notDeliveredModalOpen} onClose={clearQueryAndState} />
 
-            <div className="space-y-2">
-              <Label htmlFor="custAddr" className="text-zinc-700 font-semibold text-sm">
-                Địa chỉ <span className="text-red-500">*</span>
-              </Label>
-              <Input
-                id="custAddr"
-                required
-                placeholder="Số nhà, Đường, Quận/Huyện, Tỉnh/Thành"
-                value={customerAddress}
-                onChange={(e) => setCustomerAddress(e.target.value)}
-                className="h-11 px-4 border-zinc-300 rounded-xl focus:border-[#4B0076] focus:ring-1 focus:ring-[#4B0076]"
-              />
-            </div>
-
-            <div className="space-y-4">
-              <div className="space-y-2 flex flex-col">
-                <Label htmlFor="custDob" className="text-zinc-700 font-semibold text-sm mb-0.5">
-                  Ngày sinh
-                </Label>
-                <Popover open={dobPopoverOpen} onOpenChange={setDobPopoverOpen}>
-                  <PopoverTrigger
-                    id="custDob"
-                    className={cn(
-                      buttonVariants({ variant: 'outline' }),
-                      'w-full h-11 px-4 border-zinc-300 rounded-xl justify-start text-left font-normal focus:ring-[#4B0076] hover:bg-transparent cursor-pointer bg-white',
-                      !customerDob && 'text-muted-foreground'
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {customerDob ? format(customerDob, 'dd/MM/yyyy') : <span>dd/mm/yyyy</span>}
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0 z-[100]" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={customerDob}
-                      onSelect={(date) => {
-                        setCustomerDob(date);
-                        if (date) {
-                          setDobPopoverOpen(false);
-                        }
-                      }}
-                      disabled={(date) => date > new Date() || date < new Date('1900-01-01')}
-                      initialFocus
-                      captionLayout="dropdown"
-                      startMonth={new Date(1900, 0)}
-                      endMonth={new Date()}
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="custEmail" className="text-zinc-700 font-semibold text-sm">
-                  Email
-                </Label>
-                <Input
-                  id="custEmail"
-                  type="email"
-                  placeholder="email@example.com"
-                  value={customerEmail}
-                  onChange={(e) => setCustomerEmail(e.target.value)}
-                  className="h-11 px-4 border-zinc-300 rounded-xl focus:border-[#4B0076] focus:ring-1 focus:ring-[#4B0076]"
-                />
-              </div>
-            </div>
-
-            <div className="flex gap-3 pt-4">
-              <Button
-                type="button"
-                variant="outline"
-                className="flex-1 rounded-full h-12 cursor-pointer"
-                onClick={clearQueryAndState}
-                disabled={isActivating}
-              >
-                {t('cancel')}
-              </Button>
-              <Button
-                type="submit"
-                className="flex-1 bg-gradient-to-br from-[#4B0076] to-[#9366D9] text-white rounded-full h-12 hover:-translate-y-0.5 shadow-md cursor-pointer"
-                disabled={isActivating}
-              >
-                {isActivating ? 'Đang kích hoạt...' : t('confirm')}
-              </Button>
-            </div>
-          </form>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={activatedSuccess} onOpenChange={clearQueryAndState}>
-        <DialogContent className="w-[calc(100%-2rem)] sm:w-full max-w-[600px] bg-white/95 backdrop-blur-[2px] border border-white rounded-xl p-6 sm:p-8 shadow-[0_48px_100px_rgba(75,0,118,0.2)] text-center max-h-[90vh] overflow-y-auto">
-          <div className="w-16 h-16 rounded-full bg-green-100 text-green-600 flex items-center justify-center mx-auto mb-4">
-            <svg viewBox="0 0 24 24" className="w-8 h-8 fill-current">
-              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
-            </svg>
-          </div>
-          <DialogTitle className="text-2xl font-extrabold text-zinc-900 mb-2">
-            {t('activation_success')}
-          </DialogTitle>
-          <div className="text-zinc-600 text-[14px] mb-3 leading-relaxed">
-            {t('activation_success_msg')}
-          </div>
-          {activationResult ? (
-            <div className="rounded-2xl bg-zinc-50 border border-zinc-150 p-5 text-left text-sm text-zinc-700 mb-6 space-y-3 shadow-inner">
-              <div className="font-semibold text-zinc-950 border-b border-zinc-200/60 pb-2">
-                Thông tin bảo hành của bạn:
-              </div>
-              <ul className="space-y-2.5">
-                <li
-                  className="flex items-center justify-between cursor-pointer group hover:bg-zinc-100/50 p-1.5 rounded-lg transition-all"
-                  onClick={() =>
-                    handleCopyToClipboard(activationResult.activation.warranty_code, 'mã bảo hành')
-                  }
-                  title="Click để sao chép"
-                >
-                  <div className="flex items-start gap-2">
-                    <span className="text-[#4B0076] font-bold">•</span>
-                    <span>
-                      Mã bảo hành:{' '}
-                      <strong className="font-extrabold text-[#4B0076]">
-                        {activationResult.activation.warranty_code}
-                      </strong>
-                    </span>
-                  </div>
-                  <Copy className="w-3.5 h-3.5 text-[#4B0076] opacity-60 group-hover:opacity-100 transition-opacity" />
-                </li>
-                <li
-                  className="flex items-center justify-between cursor-pointer group hover:bg-zinc-100/50 p-1.5 rounded-lg transition-all"
-                  onClick={() => handleCopyToClipboard(sokhung, 'số khung')}
-                  title="Click để sao chép"
-                >
-                  <div className="flex items-start gap-2">
-                    <span className="text-[#4B0076] font-bold">•</span>
-                    <span>
-                      Số khung: <strong className="font-bold text-zinc-900">{sokhung}</strong>
-                    </span>
-                  </div>
-                  <Copy className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                </li>
-                <li
-                  className="flex items-center justify-between cursor-pointer group hover:bg-zinc-100/50 p-1.5 rounded-lg transition-all"
-                  onClick={() => handleCopyToClipboard(somay, 'số máy')}
-                  title="Click để sao chép"
-                >
-                  <div className="flex items-start gap-2">
-                    <span className="text-[#4B0076] font-bold">•</span>
-                    <span>
-                      Số máy: <strong className="font-bold text-zinc-900">{somay}</strong>
-                    </span>
-                  </div>
-                  <Copy className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                </li>
-                <li className="flex items-start gap-2 p-1.5">
-                  <span className="text-[#4B0076] font-bold">•</span>
-                  <span>
-                    Kích hoạt lúc:{' '}
-                    <strong className="font-bold text-zinc-900">
-                      {formatDateTime(activationResult.activation.activated_at)}
-                    </strong>
-                  </span>
-                </li>
-                <li className="flex items-start gap-2 p-1.5">
-                  <span className="text-[#4B0076] font-bold">•</span>
-                  <span>
-                    Hiệu lực đến:{' '}
-                    <strong className="font-bold text-zinc-900">
-                      {formatDate(activationResult.activation.warranty_end_date)}
-                    </strong>
-                  </span>
-                </li>
-                {activationResult.activation.dealer_name ? (
-                  <li className="flex items-start gap-2 p-1.5 border-t border-zinc-200/50 mt-1 pt-2">
-                    <span className="text-[#4B0076] font-bold">•</span>
-                    <span>
-                      Đại lý:{' '}
-                      <strong className="font-bold text-zinc-900">
-                        {activationResult.activation.dealer_name}
-                      </strong>
-                    </span>
-                  </li>
-                ) : null}
-                {activationResult.activation.customer_name ? (
-                  <li
-                    className={cn(
-                      'flex items-start gap-2 p-1.5',
-                      !activationResult.activation.dealer_name &&
-                        'border-t border-zinc-200/50 mt-1 pt-2'
-                    )}
-                  >
-                    <span className="text-[#4B0076] font-bold">•</span>
-                    <span>
-                      Khách hàng:{' '}
-                      <strong className="font-bold text-zinc-900">
-                        {activationResult.activation.customer_name}
-                      </strong>
-                    </span>
-                  </li>
-                ) : null}
-                {activationResult.activation.customer_phone ? (
-                  <li className="flex items-start gap-2 p-1.5">
-                    <span className="text-[#4B0076] font-bold">•</span>
-                    <span>
-                      SĐT:{' '}
-                      <strong className="font-bold text-zinc-900">
-                        {activationResult.activation.customer_phone}
-                      </strong>
-                    </span>
-                  </li>
-                ) : null}
-                {activationResult.activation.customer_address ? (
-                  <li className="flex items-start gap-2 p-1.5">
-                    <span className="text-[#4B0076] font-bold">•</span>
-                    <span>
-                      Địa chỉ:{' '}
-                      <strong className="font-bold text-zinc-900">
-                        {activationResult.activation.customer_address}
-                      </strong>
-                    </span>
-                  </li>
-                ) : null}
-              </ul>
-            </div>
-          ) : null}
-          <Button
-            className="w-full bg-gradient-to-br from-[#4B0076] to-[#9366D9] text-white rounded-full h-12 hover:-translate-y-0.5 shadow-md"
-            onClick={clearQueryAndState}
-          >
-            {t('complete')}
-          </Button>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={isChecking} onOpenChange={() => {}}>
-        <DialogContent className="w-[calc(100%-2rem)] sm:w-full max-w-[300px] bg-white/95 backdrop-blur-[2px] border border-white rounded-xl p-6 shadow-[0_48px_100px_rgba(75,0,118,0.2)] text-center [&>button]:hidden outline-none">
-          <DialogTitle className="sr-only">{t('checking')}</DialogTitle>
-          <div className="flex flex-col items-center justify-center space-y-4">
-            <div className="w-10 h-10 rounded-full border-4 border-[#4B0076]/20 border-t-[#4B0076] animate-spin"></div>
-            <p className="text-zinc-600 text-[13px] font-medium">{t('checking')}</p>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={notFoundModalOpen} onOpenChange={clearQueryAndState}>
-        <DialogContent className="w-[calc(100%-2rem)] sm:w-full max-w-[420px] bg-white/95 backdrop-blur-[2px] border border-white rounded-xl p-6 sm:p-8 shadow-[0_48px_100px_rgba(75,0,118,0.2)] text-center outline-none">
-          <div className="w-16 h-16 shrink-0 rounded-full bg-red-100 text-red-600 flex items-center justify-center mx-auto mb-4">
-            <svg viewBox="0 0 24 24" className="w-8 h-8 fill-current">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
-            </svg>
-          </div>
-          <DialogTitle className="text-2xl font-extrabold text-red-600 mb-2">
-            {t('warranty_not_found')}
-          </DialogTitle>
-          <div className="text-zinc-600 text-[14px] mb-6 leading-relaxed">
-            {t('warranty_not_found_msg')}
-          </div>
-          <Button
-            className="w-full bg-zinc-900 text-white rounded-full h-12 hover:bg-zinc-800 shadow-md"
-            onClick={clearQueryAndState}
-          >
-            {t('close')}
-          </Button>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={notDeliveredModalOpen} onOpenChange={clearQueryAndState}>
-        <DialogContent className="w-[calc(100%-2rem)] sm:w-full max-w-[420px] bg-white/95 backdrop-blur-[2px] border border-white rounded-xl p-6 sm:p-8 shadow-[0_48px_100px_rgba(75,0,118,0.2)] text-center outline-none">
-          <div className="w-16 h-16 shrink-0 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center mx-auto mb-4">
-            <svg viewBox="0 0 24 24" className="w-8 h-8 fill-current">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
-            </svg>
-          </div>
-          <DialogTitle className="text-2xl font-extrabold text-orange-600 mb-2">
-            {t('not_delivered')}
-          </DialogTitle>
-          <div className="text-zinc-600 text-[14px] mb-6 leading-relaxed">
-            {t('not_delivered_msg')}
-          </div>
-          <Button
-            className="w-full bg-zinc-900 text-white rounded-full h-12 hover:bg-zinc-800 shadow-md"
-            onClick={clearQueryAndState}
-          >
-            {t('close')}
-          </Button>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={alreadyActivatedModalOpen} onOpenChange={clearQueryAndState}>
-        <DialogContent className="w-[calc(100%-2rem)] sm:w-full max-w-[420px] sm:max-w-[500px] bg-white/95 backdrop-blur-[2px] border border-white rounded-xl p-6 sm:p-8 shadow-[0_48px_100px_rgba(75,0,118,0.2)] text-center max-h-[90vh] overflow-y-auto">
-          <div className="w-16 h-16 shrink-0 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mx-auto mb-4">
-            <svg viewBox="0 0 24 24" className="w-8 h-8 fill-current">
-              <path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" />
-            </svg>
-          </div>
-          <DialogTitle className="text-2xl font-extrabold text-[#4B0076] mb-2">
-            {t('already_activated')}
-          </DialogTitle>
-          {checkResult?.active_warranty ? (
-            <div className="rounded-2xl bg-zinc-50 border border-zinc-150 p-5 text-left text-sm text-zinc-700 mb-6 space-y-3 shadow-inner">
-              <div className="font-semibold text-zinc-950 border-b border-zinc-200/60 pb-2">
-                Thông tin bảo hành đã kích hoạt:
-              </div>
-              <ul className="space-y-2.5">
-                <li
-                  className="flex items-center justify-between cursor-pointer group hover:bg-zinc-100/50 p-1.5 rounded-lg transition-all"
-                  onClick={() =>
-                    handleCopyToClipboard(checkResult.active_warranty!.warranty_code, 'mã bảo hành')
-                  }
-                  title="Click để sao chép"
-                >
-                  <div className="flex items-start gap-2">
-                    <span className="text-[#4B0076] font-bold">•</span>
-                    <span>
-                      Mã bảo hành:{' '}
-                      <strong className="font-extrabold text-[#4B0076]">
-                        {checkResult.active_warranty.warranty_code}
-                      </strong>
-                    </span>
-                  </div>
-                  <Copy className="w-3.5 h-3.5 text-[#4B0076] opacity-60 group-hover:opacity-100 transition-opacity" />
-                </li>
-                <li
-                  className="flex items-center justify-between cursor-pointer group hover:bg-zinc-100/50 p-1.5 rounded-lg transition-all"
-                  onClick={() => handleCopyToClipboard(sokhung, 'số khung')}
-                  title="Click để sao chép"
-                >
-                  <div className="flex items-start gap-2">
-                    <span className="text-[#4B0076] font-bold">•</span>
-                    <span>
-                      Số khung: <strong className="font-bold text-zinc-900">{sokhung}</strong>
-                    </span>
-                  </div>
-                  <Copy className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                </li>
-                <li
-                  className="flex items-center justify-between cursor-pointer group hover:bg-zinc-100/50 p-1.5 rounded-lg transition-all"
-                  onClick={() => handleCopyToClipboard(somay, 'số máy')}
-                  title="Click để sao chép"
-                >
-                  <div className="flex items-start gap-2">
-                    <span className="text-[#4B0076] font-bold">•</span>
-                    <span>
-                      Số máy: <strong className="font-bold text-zinc-900">{somay}</strong>
-                    </span>
-                  </div>
-                  <Copy className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                </li>
-                <li className="flex items-start gap-2 p-1.5">
-                  <span className="text-[#4B0076] font-bold">•</span>
-                  <span>
-                    Kích hoạt lúc:{' '}
-                    <strong className="font-bold text-zinc-900">
-                      {formatDateTime(checkResult.active_warranty.activated_at)}
-                    </strong>
-                  </span>
-                </li>
-                <li className="flex items-start gap-2 p-1.5">
-                  <span className="text-[#4B0076] font-bold">•</span>
-                  <span>
-                    Hiệu lực đến:{' '}
-                    <strong className="font-bold text-zinc-900">
-                      {formatDate(checkResult.active_warranty.warranty_end_date)}
-                    </strong>
-                  </span>
-                </li>
-                {checkResult.active_warranty.dealer_name ? (
-                  <li className="flex items-start gap-2 p-1.5 border-t border-zinc-200/50 mt-1 pt-2">
-                    <span className="text-[#4B0076] font-bold">•</span>
-                    <span>
-                      Đại lý:{' '}
-                      <strong className="font-bold text-zinc-900">
-                        {checkResult.active_warranty.dealer_name}
-                      </strong>
-                    </span>
-                  </li>
-                ) : null}
-                {checkResult.active_warranty.customer_name ? (
-                  <li
-                    className={cn(
-                      'flex items-start gap-2 p-1.5',
-                      !checkResult.active_warranty.dealer_name &&
-                        'border-t border-zinc-200/50 mt-1 pt-2'
-                    )}
-                  >
-                    <span className="text-[#4B0076] font-bold">•</span>
-                    <span>
-                      Khách hàng:{' '}
-                      <strong className="font-bold text-zinc-900">
-                        {checkResult.active_warranty.customer_name}
-                      </strong>
-                    </span>
-                  </li>
-                ) : null}
-                {checkResult.active_warranty.customer_phone ? (
-                  <li className="flex items-start gap-2 p-1.5">
-                    <span className="text-[#4B0076] font-bold">•</span>
-                    <span>
-                      SĐT:{' '}
-                      <strong className="font-bold text-zinc-900">
-                        {checkResult.active_warranty.customer_phone}
-                      </strong>
-                    </span>
-                  </li>
-                ) : null}
-                {checkResult.active_warranty.customer_address ? (
-                  <li className="flex items-start gap-2 p-1.5">
-                    <span className="text-[#4B0076] font-bold">•</span>
-                    <span>
-                      Địa chỉ:{' '}
-                      <strong className="font-bold text-zinc-900">
-                        {checkResult.active_warranty.customer_address}
-                      </strong>
-                    </span>
-                  </li>
-                ) : null}
-              </ul>
-            </div>
-          ) : null}
-          <Button
-            className="w-full bg-gradient-to-br from-[#4B0076] to-[#9366D9] text-white rounded-full h-12 hover:-translate-y-0.5 shadow-md"
-            onClick={clearQueryAndState}
-          >
-            {t('close')}
-          </Button>
-        </DialogContent>
-      </Dialog>
+      {/* Modal 6: Đã kích hoạt trước đó */}
+      <AlreadyActivatedModal
+        open={alreadyActivatedModalOpen}
+        onClose={clearQueryAndState}
+        checkResult={checkResult}
+        sokhung={sokhung}
+        somay={somay}
+      />
     </div>
   );
 }
