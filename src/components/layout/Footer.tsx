@@ -40,7 +40,14 @@ export function Footer() {
           <div className="flex flex-col gap-2 text-[13px] opacity-70">
             <p>{t('address_1')}</p>
             <p>{t('address_2')}</p>
-            <p className="font-semibold text-white mt-1 opacity-100">0908801567</p>
+            <div className="flex flex-col gap-1 mt-1 text-white font-semibold opacity-100">
+              <a href="tel:1900545406" className="hover:text-purple-300 transition-colors">
+                Hotline: 1900 54 54 06
+              </a>
+              <a href="tel:0818545406" className="hover:text-purple-300 transition-colors">
+                Hotline: 08 18 54 54 06
+              </a>
+            </div>
             {/* <p>support@klotus.vn</p> */}
           </div>
         </div>

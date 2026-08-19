@@ -38,7 +38,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       {/* TODO: Khôi phục Floating Action Buttons khi cần
       <div className="fixed right-5 bottom-5 z-40 flex flex-col gap-2.5">
         <button 
-          onClick={() => alert('Gọi ngay: 0908801567')}
+          onClick={() => alert('Gọi ngay: 1900 54 54 06 / 08 18 54 54 06')}
           className="group relative w-12 h-12 rounded-full border-none cursor-pointer flex items-center justify-center transition-transform hover:scale-110 bg-gradient-to-br from-[#22c55e] to-[#16a34a] shadow-[0_4px_16px_rgba(34,197,94,0.4)]"
         >
           <div className="absolute right-14 bg-black/75 text-white text-[11px] font-semibold px-2.5 py-1.5 rounded-md whitespace-nowrap opacity-0 pointer-events-none transition-opacity group-hover:opacity-100">Gọi ngay</div>
