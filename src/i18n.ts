@@ -43,6 +43,11 @@ const en = {
     free_test_drive: 'Free test drive',
     invalid_info: 'Invalid information',
     server_error_try_again: 'Please try again later',
+    hero_badge: 'RA MẮT 2026 · MADE IN VIETNAM',
+    hero_title_1: 'Next-Gen',
+    hero_title_2: 'Electric Vehicles',
+    hero_subtitle:
+      'K Lotus – Advanced green technology, breakthrough design. Your journey, your way.',
     paceo_badge: 'K Lotus Paceo 2026',
     paceo_tagline: 'PACEO — Thiết Kế Hiện Đại, Vận Hành Bền Bỉ',
     paceo_desc:
@@ -77,6 +82,11 @@ const vi = {
   translation: {
     title: 'Xe Điện Thế Hệ Mới',
     subtitle:
+      'K Lotus – Công nghệ xanh tiên tiến, thiết kế đột phá. Hành trình của bạn, theo cách bạn muốn.',
+    hero_badge: 'RA MẮT 2026 · MADE IN VIETNAM',
+    hero_title_1: 'Xe Điện',
+    hero_title_2: 'Thế Hệ Mới',
+    hero_subtitle:
       'K Lotus – Công nghệ xanh tiên tiến, thiết kế đột phá. Hành trình của bạn, theo cách bạn muốn.',
     warranty_policy: 'Chính Sách Bảo Hành',
     warranty_subtitle:

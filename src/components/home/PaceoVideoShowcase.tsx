@@ -1,8 +1,22 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useTranslation } from 'react-i18next';
-import { Play, Pause, Volume2, VolumeX, Maximize2 } from 'lucide-react';
-import { PaceoTheaterModal } from './PaceoTheaterModal';
+import { Play, Pause, Volume2, VolumeX, Maximize2, Minimize2 } from 'lucide-react';
+
+interface FullscreenDocument extends Document {
+  webkitFullscreenElement?: Element;
+  mozFullScreenElement?: Element;
+  msFullscreenElement?: Element;
+  webkitExitFullscreen?: () => Promise<void>;
+  mozCancelFullScreen?: () => Promise<void>;
+  msExitFullscreen?: () => Promise<void>;
+}
+
+interface FullscreenElement extends HTMLDivElement {
+  webkitRequestFullscreen?: () => Promise<void>;
+  mozRequestFullScreen?: () => Promise<void>;
+  msRequestFullscreen?: () => Promise<void>;
+}
 
 interface PaceoVideoShowcaseProps {
   videoSrc?: string;
@@ -22,7 +36,33 @@ export function PaceoVideoShowcase({
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(61.8);
   const [isHovered, setIsHovered] = useState(false);
-  const [showTheaterModal, setShowTheaterModal] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  // Sync fullscreen state with document
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      const doc = document as FullscreenDocument;
+      const isCurrentlyFullscreen = Boolean(
+        doc.fullscreenElement ||
+        doc.webkitFullscreenElement ||
+        doc.mozFullScreenElement ||
+        doc.msFullscreenElement
+      );
+      setIsFullscreen(isCurrentlyFullscreen);
+    };
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+    document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+    document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+      document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
+      document.removeEventListener('mozfullscreenchange', handleFullscreenChange);
+      document.removeEventListener('MSFullscreenChange', handleFullscreenChange);
+    };
+  }, []);
 
   // IntersectionObserver: auto-play when in viewport, auto-pause when scrolled away
   useEffect(() => {
@@ -75,6 +115,29 @@ export function PaceoVideoShowcase({
     setIsMuted(video.muted);
   }, []);
 
+  const toggleFullscreen = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    const container = containerRef.current as FullscreenElement | null;
+    if (!container) return;
+
+    const doc = document as FullscreenDocument;
+    const isCurrentlyFullscreen = Boolean(doc.fullscreenElement || doc.webkitFullscreenElement);
+
+    if (!isCurrentlyFullscreen) {
+      if (container.requestFullscreen) {
+        container.requestFullscreen().catch(() => {});
+      } else if (container.webkitRequestFullscreen) {
+        container.webkitRequestFullscreen();
+      }
+    } else {
+      if (doc.exitFullscreen) {
+        doc.exitFullscreen().catch(() => {});
+      } else if (doc.webkitExitFullscreen) {
+        doc.webkitExitFullscreen();
+      }
+    }
+  }, []);
+
   const handleTimeUpdate = () => {
     if (videoRef.current) {
       setCurrentTime(videoRef.current.currentTime);
@@ -114,7 +177,12 @@ export function PaceoVideoShowcase({
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         onClick={togglePlay}
-        className="relative w-full aspect-[16/9] rounded-3xl sm:rounded-[32px] overflow-hidden bg-black/90 border border-white/60 dark:border-purple-500/30 shadow-[0_32px_90px_rgba(75,0,118,0.22)] cursor-pointer group select-none"
+        onDoubleClick={toggleFullscreen}
+        className={`relative w-full overflow-hidden bg-black select-none group cursor-pointer ${
+          isFullscreen
+            ? 'w-screen h-screen rounded-none border-none'
+            : 'aspect-[16/9] rounded-3xl sm:rounded-[32px] border border-white/60 dark:border-purple-500/30 shadow-[0_32px_90px_rgba(75,0,118,0.22)]'
+        }`}
       >
         {/* Video Element */}
         <video
@@ -125,8 +193,11 @@ export function PaceoVideoShowcase({
           muted={isMuted}
           playsInline
           autoPlay
+          onLoadedMetadata={handleTimeUpdate}
           onTimeUpdate={handleTimeUpdate}
-          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.01]"
+          className={`w-full h-full transition-transform duration-700 ${
+            isFullscreen ? 'object-contain' : 'object-cover group-hover:scale-[1.01]'
+          }`}
         />
 
         {/* Gradient Overlays for Readability */}
@@ -152,7 +223,7 @@ export function PaceoVideoShowcase({
         {/* Bottom Floating Glass HUD Controls */}
         <div
           className={`absolute bottom-0 inset-x-0 p-4 sm:p-6 flex flex-col gap-3 transition-opacity duration-300 ${
-            isHovered || !isPlaying ? 'opacity-100' : 'opacity-0 sm:opacity-90'
+            isHovered || !isPlaying || isFullscreen ? 'opacity-100' : 'opacity-0 sm:opacity-90'
           }`}
         >
           {/* Progress Scrubber Bar */}
@@ -208,30 +279,28 @@ export function PaceoVideoShowcase({
                 )}
               </button>
 
-              {/* Theater Mode Button */}
+              {/* Real Fullscreen Button */}
               <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setShowTheaterModal(true);
-                }}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/15 hover:bg-white/30 backdrop-blur-xl border border-white/20 transition-all cursor-pointer"
-                title={t('fullscreen')}
+                onClick={toggleFullscreen}
+                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/15 hover:bg-white/30 backdrop-blur-xl border border-white/20 transition-all cursor-pointer"
+                title={isFullscreen ? t('exit_fullscreen') : t('fullscreen')}
               >
-                <Maximize2 className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline text-[11px]">{t('fullscreen')}</span>
+                {isFullscreen ? (
+                  <>
+                    <Minimize2 className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline text-[11px]">{t('exit_fullscreen')}</span>
+                  </>
+                ) : (
+                  <>
+                    <Maximize2 className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline text-[11px]">{t('fullscreen')}</span>
+                  </>
+                )}
               </button>
             </div>
           </div>
         </div>
       </motion.div>
-
-      {/* Fullscreen Theater Pop-up */}
-      <PaceoTheaterModal
-        open={showTheaterModal}
-        onOpenChange={setShowTheaterModal}
-        videoSrc={videoSrc}
-        posterSrc={posterSrc}
-      />
     </section>
   );
 }
