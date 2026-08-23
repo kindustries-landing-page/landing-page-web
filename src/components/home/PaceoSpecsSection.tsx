@@ -10,14 +10,17 @@ export function PaceoSpecsSection() {
   const navigate = useNavigate();
 
   return (
-    <section className="w-full max-w-6xl mx-auto px-4 sm:px-6 my-8 mb-20 flex flex-col items-center">
+    <section
+      id="specs-section"
+      className="w-full max-w-6xl mx-auto px-4 sm:px-6 pt-6 sm:pt-10 pb-16 sm:pb-24 flex flex-col items-center"
+    >
       {/* Clean Action Banner Card with Official Hotlines */}
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
-        className="w-full rounded-3xl p-8 sm:p-10 bg-gradient-to-br from-[#4B0076] via-[#6b119e] to-[#9366D9] text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-[0_24px_64px_rgba(75,0,118,0.3)] relative overflow-hidden"
+        className="w-full rounded-2xl p-7 sm:p-9 bg-gradient-to-br from-[#4B0076] via-[#6b119e] to-[#9366D9] text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-[0_20px_56px_rgba(75,0,118,0.28)] relative overflow-hidden"
       >
         <div className="absolute top-0 right-0 w-80 h-80 bg-white/10 rounded-full blur-3xl -z-0 pointer-events-none" />
         <div className="absolute -bottom-10 -left-10 w-60 h-60 bg-purple-400/20 rounded-full blur-2xl -z-0 pointer-events-none" />

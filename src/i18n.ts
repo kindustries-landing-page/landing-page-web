@@ -43,11 +43,10 @@ const en = {
     free_test_drive: 'Free test drive',
     invalid_info: 'Invalid information',
     server_error_try_again: 'Please try again later',
-    hero_badge: 'RA MẮT 2026 · MADE IN VIETNAM',
+    hero_badge: 'K LOTUS · RA MẮT 2026 · MADE IN VIETNAM',
     hero_title_1: 'Next-Gen',
     hero_title_2: 'Electric Vehicles',
-    hero_subtitle:
-      'K Lotus – Advanced green technology, breakthrough design. Your journey, your way.',
+    hero_subtitle: 'Advanced green technology, breakthrough design. Your journey, your way.',
     paceo_badge: 'K Lotus Paceo 2026',
     paceo_tagline: 'PACEO — Thiết Kế Hiện Đại, Vận Hành Bền Bỉ',
     paceo_desc:
@@ -75,6 +74,10 @@ const en = {
     mute: 'Tắt âm thanh',
     fullscreen: 'Toàn màn hình',
     exit_fullscreen: 'Thu nhỏ',
+    scroll_to_explore: 'Scroll to explore',
+    scroll_down: 'Scroll down',
+    specs_nfc: 'Smart NFC Unlock',
+    specs_nfc_val: '1-Touch',
   },
 };
 
@@ -83,11 +86,11 @@ const vi = {
     title: 'Xe Điện Thế Hệ Mới',
     subtitle:
       'K Lotus – Công nghệ xanh tiên tiến, thiết kế đột phá. Hành trình của bạn, theo cách bạn muốn.',
-    hero_badge: 'RA MẮT 2026 · MADE IN VIETNAM',
+    hero_badge: 'K LOTUS · RA MẮT 2026 · MADE IN VIETNAM',
     hero_title_1: 'Xe Điện',
     hero_title_2: 'Thế Hệ Mới',
     hero_subtitle:
-      'K Lotus – Công nghệ xanh tiên tiến, thiết kế đột phá. Hành trình của bạn, theo cách bạn muốn.',
+      'Công nghệ xanh tiên tiến, thiết kế đột phá. Hành trình của bạn, theo cách bạn muốn.',
     warranty_policy: 'Chính Sách Bảo Hành',
     warranty_subtitle:
       'K Lotus cam kết bảo hành toàn diện – để bạn luôn yên tâm trên mọi hành trình',
@@ -152,6 +155,10 @@ const vi = {
     mute: 'Tắt âm thanh',
     fullscreen: 'Toàn màn hình',
     exit_fullscreen: 'Thu nhỏ',
+    scroll_to_explore: 'Cuộn để khám phá',
+    scroll_down: 'Cuộn xuống',
+    specs_nfc: 'Mở khóa NFC',
+    specs_nfc_val: '1 Chạm',
   },
 };
 
