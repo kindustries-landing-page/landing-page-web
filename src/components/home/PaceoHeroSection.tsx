@@ -233,9 +233,9 @@ export function PaceoHeroSection({
         }`}
       />
 
-      {/* Center Play Indicator (when paused) */}
+      {/* Center Play Indicator (Shown in Fullscreen or when clean theater) */}
       <AnimatePresence>
-        {!isPlaying && (
+        {!isPlaying && isFullscreen && (
           <motion.div
             initial={{ scale: 0.7, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
@@ -267,16 +267,16 @@ export function PaceoHeroSection({
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5 }}
-                className="inline-flex items-center gap-2.5 bg-white/15 backdrop-blur-xl border border-purple-300/40 rounded-full pl-3 pr-5 py-1.5 text-[11px] sm:text-xs font-extrabold uppercase mb-4 sm:mb-5 shadow-lg shadow-purple-500/10"
+                className="inline-flex items-center gap-2 sm:gap-2.5 bg-white/15 backdrop-blur-xl border border-purple-300/40 rounded-full pl-2.5 pr-3.5 sm:pl-3 sm:pr-5 py-1 sm:py-1.5 text-[10px] sm:text-xs font-extrabold uppercase mb-3.5 sm:mb-5 shadow-lg shadow-purple-500/10 whitespace-nowrap max-w-[94vw]"
               >
-                <div className="w-5 h-5 rounded-full bg-white flex items-center justify-center p-0.5 shadow-sm">
+                <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-white flex items-center justify-center p-0.5 shadow-sm shrink-0">
                   <img src="/favicon.png" alt="K Lotus" className="w-full h-full object-contain" />
                 </div>
-                <span className="text-white font-black tracking-[0.2em] text-xs sm:text-[13px]">
+                <span className="text-white font-black tracking-[0.14em] sm:tracking-[0.2em] text-[11px] sm:text-[13px] shrink-0">
                   K LOTUS
                 </span>
-                <span className="text-purple-300/50">|</span>
-                <span className="text-purple-200 tracking-[0.14em]">
+                <span className="text-purple-300/50 shrink-0">|</span>
+                <span className="text-purple-200 tracking-[0.06em] sm:tracking-[0.14em] shrink-0 text-[10px] sm:text-xs">
                   RA MẮT 2026 · MADE IN VIETNAM
                 </span>
               </motion.div>
@@ -286,7 +286,7 @@ export function PaceoHeroSection({
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.1 }}
-                className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black leading-[1.05] tracking-tight mb-5 sm:mb-7 drop-shadow-md"
+                className="text-[28px] xs:text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black leading-[1.08] tracking-tight mb-4 sm:mb-6 drop-shadow-md"
               >
                 <span className="text-white drop-shadow-[0_2px_14px_rgba(0,0,0,0.9)]">
                   {t('hero_title_1')}{' '}
