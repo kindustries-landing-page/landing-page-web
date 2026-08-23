@@ -286,7 +286,7 @@ export function PaceoHeroSection({
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.1 }}
-                className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black leading-[1.05] tracking-tight mb-3 sm:mb-4 drop-shadow-md"
+                className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black leading-[1.05] tracking-tight mb-5 sm:mb-7 drop-shadow-md"
               >
                 <span className="text-white drop-shadow-[0_2px_14px_rgba(0,0,0,0.9)]">
                   {t('hero_title_1')}{' '}
@@ -295,16 +295,6 @@ export function PaceoHeroSection({
                   {t('hero_title_2')}
                 </span>
               </motion.h1>
-
-              {/* Subtitle */}
-              <motion.p
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-                className="text-sm sm:text-base md:text-lg text-zinc-200/95 max-w-2xl leading-relaxed mb-6 sm:mb-8 font-medium drop-shadow"
-              >
-                {t('hero_subtitle')}
-              </motion.p>
 
               {/* CTA Buttons */}
               <motion.div

@@ -45,8 +45,8 @@ export function PaceoTheaterModal({
           <div className="flex items-center gap-2">
             <div className="w-2.5 h-2.5 rounded-full bg-purple-500 animate-pulse" />
             <DialogTitle className="text-sm font-bold tracking-wider uppercase bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-purple-400" />
-              Klotus Paceo — Official Keyvisual 2026
+              <Sparkles className="w-3.5 h-3.5 text-purple-400" />K Lotus Paceo — Official Keyvisual
+              2026
             </DialogTitle>
           </div>
           <div className="flex items-center gap-3">

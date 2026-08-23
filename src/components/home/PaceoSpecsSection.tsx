@@ -12,7 +12,7 @@ export function PaceoSpecsSection() {
   return (
     <section
       id="specs-section"
-      className="w-full max-w-6xl mx-auto px-4 sm:px-6 pt-6 sm:pt-10 pb-16 sm:pb-24 flex flex-col items-center"
+      className="w-full max-w-6xl mx-auto px-4 sm:px-6 pt-10 sm:pt-14 pb-16 sm:pb-24 flex flex-col items-center"
     >
       {/* Clean Action Banner Card with Official Hotlines */}
       <motion.div
@@ -31,7 +31,7 @@ export function PaceoSpecsSection() {
             Hệ Thống Bảo Hành & Hỗ Trợ Khách Hàng
           </div>
           <h3 className="text-2xl sm:text-3xl font-black mb-2 tracking-tight">
-            Tra Cứu & Kích Hoạt Bảo Hành Klotus
+            Tra Cứu & Kích Hoạt Bảo Hành K Lotus
           </h3>
           <p className="text-sm sm:text-base text-purple-100/90 max-w-xl leading-relaxed mb-3">
             Nhập số khung và số máy để kiểm tra thông tin xe, kích hoạt bảo hành điện tử chính hãng
