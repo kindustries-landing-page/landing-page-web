@@ -18,6 +18,15 @@ interface FullscreenElement extends HTMLDivElement {
   msRequestFullscreen?: () => Promise<void>;
 }
 
+interface WebKitVideoElement extends HTMLVideoElement {
+  webkitEnterFullscreen?: () => void;
+  webkitEnterFullScreen?: () => void;
+  webkitExitFullscreen?: () => void;
+  webkitExitFullScreen?: () => void;
+  webkitSupportsFullscreen?: boolean;
+  webkitDisplayingFullscreen?: boolean;
+}
+
 interface PaceoVideoShowcaseProps {
   videoSrc?: string;
   posterSrc?: string;
@@ -38,29 +47,45 @@ export function PaceoVideoShowcase({
   const [isHovered, setIsHovered] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
-  // Sync fullscreen state with document
+  // Sync fullscreen state with document and iOS WebKit video events
   useEffect(() => {
+    const video = videoRef.current as WebKitVideoElement | null;
+
     const handleFullscreenChange = () => {
       const doc = document as FullscreenDocument;
       const isCurrentlyFullscreen = Boolean(
         doc.fullscreenElement ||
         doc.webkitFullscreenElement ||
         doc.mozFullScreenElement ||
-        doc.msFullscreenElement
+        doc.msFullscreenElement ||
+        video?.webkitDisplayingFullscreen
       );
       setIsFullscreen(isCurrentlyFullscreen);
     };
+
+    const handleVideoBeginFullscreen = () => setIsFullscreen(true);
+    const handleVideoEndFullscreen = () => setIsFullscreen(false);
 
     document.addEventListener('fullscreenchange', handleFullscreenChange);
     document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
     document.addEventListener('mozfullscreenchange', handleFullscreenChange);
     document.addEventListener('MSFullscreenChange', handleFullscreenChange);
 
+    if (video) {
+      video.addEventListener('webkitbeginfullscreen', handleVideoBeginFullscreen);
+      video.addEventListener('webkitendfullscreen', handleVideoEndFullscreen);
+    }
+
     return () => {
       document.removeEventListener('fullscreenchange', handleFullscreenChange);
       document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
       document.removeEventListener('mozfullscreenchange', handleFullscreenChange);
       document.removeEventListener('MSFullscreenChange', handleFullscreenChange);
+
+      if (video) {
+        video.removeEventListener('webkitbeginfullscreen', handleVideoBeginFullscreen);
+        video.removeEventListener('webkitendfullscreen', handleVideoEndFullscreen);
+      }
     };
   }, []);
 
@@ -115,28 +140,67 @@ export function PaceoVideoShowcase({
     setIsMuted(video.muted);
   }, []);
 
-  const toggleFullscreen = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation();
-    const container = containerRef.current as FullscreenElement | null;
-    if (!container) return;
+  const toggleFullscreen = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      const container = containerRef.current as FullscreenElement | null;
+      const video = videoRef.current as WebKitVideoElement | null;
+      if (!container) return;
 
-    const doc = document as FullscreenDocument;
-    const isCurrentlyFullscreen = Boolean(doc.fullscreenElement || doc.webkitFullscreenElement);
+      const doc = document as FullscreenDocument;
+      const isCurrentlyFullscreen = Boolean(
+        doc.fullscreenElement ||
+        doc.webkitFullscreenElement ||
+        video?.webkitDisplayingFullscreen ||
+        isFullscreen
+      );
 
-    if (!isCurrentlyFullscreen) {
-      if (container.requestFullscreen) {
-        container.requestFullscreen().catch(() => {});
-      } else if (container.webkitRequestFullscreen) {
-        container.webkitRequestFullscreen();
+      // Detect iOS devices (iPhone, iPad, iPod)
+      const isIOS =
+        typeof navigator !== 'undefined' &&
+        (/iPad|iPhone|iPod/.test(navigator.userAgent) ||
+          (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1));
+
+      if (!isCurrentlyFullscreen) {
+        if (isIOS && video?.webkitEnterFullscreen) {
+          // iOS Safari iPhone/iPad requires calling webkitEnterFullscreen on video directly
+          video.webkitEnterFullscreen();
+        } else if (container.requestFullscreen) {
+          container.requestFullscreen().catch(() => {
+            // Fallback if container requestFullscreen fails on mobile
+            if (video?.webkitEnterFullscreen) {
+              video.webkitEnterFullscreen();
+            } else if (video?.requestFullscreen) {
+              video.requestFullscreen().catch(() => {});
+            }
+          });
+        } else if (container.webkitRequestFullscreen) {
+          container.webkitRequestFullscreen().catch(() => {
+            if (video?.webkitEnterFullscreen) {
+              video.webkitEnterFullscreen();
+            }
+          });
+        } else if (video?.webkitEnterFullscreen) {
+          video.webkitEnterFullscreen();
+        } else if (video?.webkitEnterFullScreen) {
+          video.webkitEnterFullScreen();
+        } else if (video?.requestFullscreen) {
+          video.requestFullscreen().catch(() => {});
+        }
+      } else {
+        if (doc.exitFullscreen) {
+          doc.exitFullscreen().catch(() => {});
+        } else if (doc.webkitExitFullscreen) {
+          doc.webkitExitFullscreen().catch(() => {});
+        } else if (video?.webkitExitFullscreen) {
+          video.webkitExitFullscreen();
+        } else if (video?.webkitExitFullScreen) {
+          video.webkitExitFullScreen();
+        }
       }
-    } else {
-      if (doc.exitFullscreen) {
-        doc.exitFullscreen().catch(() => {});
-      } else if (doc.webkitExitFullscreen) {
-        doc.webkitExitFullscreen();
-      }
-    }
-  }, []);
+    },
+    [isFullscreen]
+  );
 
   const handleTimeUpdate = () => {
     if (videoRef.current) {
