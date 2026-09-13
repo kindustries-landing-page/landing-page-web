@@ -8,7 +8,7 @@ const baseURL = envBaseUrl
   ? envBaseUrl.endsWith('/api/v1')
     ? envBaseUrl
     : `${envBaseUrl.replace(/\/$/, '')}/api/v1`
-  : 'http://localhost:10000/api/v1';
+  : '/api/v1';
 
 const api = axios.create({
   baseURL,

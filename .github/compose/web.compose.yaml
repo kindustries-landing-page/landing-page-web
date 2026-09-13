@@ -3,6 +3,9 @@ services:
     image: ${LANDING_WEB_IMAGE:?LANDING_WEB_IMAGE is required}
     restart: unless-stopped
     stop_grace_period: 20s
+    environment:
+      - PORT=3000
+      - API_UPSTREAM_URL=http://landing-page-klotus-production-__TARGET_HOST__-api-api-1:3000
     expose: ['3000']
     ports: ['__TARGET_IP__:__TARGET_PORT__:3000']
     networks: [npm-network]

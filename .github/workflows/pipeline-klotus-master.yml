@@ -63,7 +63,7 @@ jobs:
           file: ./Dockerfile
           push: true
           build-args: |
-            VITE_API_BASE_URL=${{ vars.VITE_API_BASE_URL }}
+            VITE_API_BASE_URL=/api/v1
           tags: |
             ${{ env.IMAGE_NAME }}:latest
             ${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.sha }}
@@ -137,7 +137,7 @@ jobs:
           echo "Resolved Server $SERVER_NAME -> $server_id"
 
           # 2. Compose contents from template
-          web_compose="$(sed -e "s/__TARGET_IP__/$TARGET_IP/g" -e "s/__TARGET_PORT__/$TARGET_PORT/g" .github/compose/web.compose.yaml)"
+          web_compose="$(sed -e "s/__TARGET_IP__/$TARGET_IP/g" -e "s/__TARGET_PORT__/$TARGET_PORT/g" -e "s/__TARGET_HOST__/$TARGET_HOST/g" .github/compose/web.compose.yaml)"
 
           ensure_stack() {
             local sname="$1"
