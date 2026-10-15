@@ -19,6 +19,6 @@ Frontend landing page cho Klotus warranty/public funnel.
 ## Local run
 
 ```bash
-npm install
-npm run dev
+bun install
+bun run dev
 ```
