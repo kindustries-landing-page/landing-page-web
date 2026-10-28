@@ -21,6 +21,9 @@
     "*.{ts,tsx,js,jsx}": [
       "eslint --fix",
       "prettier --write"
+    ],
+    "src/**/*.{ts,tsx}": [
+      "vitest related --run --passWithNoTests"
     ]
   },
   "dependencies": {

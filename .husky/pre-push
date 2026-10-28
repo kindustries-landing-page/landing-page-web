@@ -1,2 +1,1 @@
-bun run check:ci
-bunx vitest run --reporter=dot
+bun run type:check
